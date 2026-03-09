@@ -1236,7 +1236,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 
                     <div class="auth-divider"><span>or</span></div>
                     <button class="guest-btn" onclick="continueAsGuest()">Continue as Guest</button>
-                    <div class="admin-link">Admin? <a href="#" onclick="showAdminLogin(); return false;">Login here</a></div>
+                    <div class="admin-link"><a href="#" onclick="showForgotPassword(); return false;">Forgot Password?</a></div>
                 </div>
             </div>
         </div>
@@ -1708,16 +1708,17 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
         </div>
     </div>
 
-    <div class="modal-overlay" id="adminLoginModal">
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotPasswordModal">
         <div class="modal">
-            <div class="modal-header"><h3>🔐 Admin Login</h3><button class="modal-close" onclick="closeModal('adminLoginModal')">✕</button></div>
+            <div class="modal-header"><h3>🔑 Reset Password</h3><button class="modal-close" onclick="closeModal('forgotPasswordModal')">✕</button></div>
             <div class="modal-body">
-                <div class="form-group"><label>Email</label><input type="email" id="adminEmail" placeholder="admin@pep.com" autocomplete="email"></div>
-                <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password"></div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Enter your email address and we'll send you a link to reset your password.</p>
+                <div class="form-group"><label>Email Address</label><input type="email" id="resetEmail" placeholder="Enter your email" autocomplete="email"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('adminLoginModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="handleAdminLogin()">Login</button>
+                <button class="btn btn-outline" onclick="closeModal('forgotPasswordModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="handleForgotPassword()">Send Reset Link</button>
             </div>
         </div>
     </div>
@@ -1803,7 +1804,7 @@ const firebaseConfig = {
 
 const ADMIN_EMAIL = 'parentsempowermentprogram@gmail.com';
 const EMAILJS_PUBLIC_KEY = 'Vj-8RtDFhv07_0At1';
-const EMAILJS_SERVICE_ID = 'service_faimpjb';
+const EMAILJS_SERVICE_ID = 'service_s7sewzu';
 const EMAILJS_TEMPLATE_ID = 'template_jbjqfu5';
 
 // ============================================
@@ -2190,24 +2191,35 @@ function continueAsGuest() {
     updatePhonePrefix();
 }
 
-function showAdminLogin() {
-    document.getElementById('adminLoginModal').classList.add('show');
+function showForgotPassword() {
+    document.getElementById('forgotPasswordModal').classList.add('show');
+    document.getElementById('resetEmail').value = '';
 }
 
-async function handleAdminLogin() {
-    const email = Security.sanitizeInput(document.getElementById('adminEmail').value);
-    const password = document.getElementById('adminPassword').value;
+async function handleForgotPassword() {
+    const email = Security.sanitizeInput(document.getElementById('resetEmail').value);
+
+    if (!email) {
+        showToast('Please enter your email address', 'error');
+        return;
+    }
+
+    if (!Security.validateEmail(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
 
     try {
-        Security.checkRateLimit(email);
-        await auth.signInWithEmailAndPassword(email, password);
-        Security.clearAttempts(email);
-        closeModal('adminLoginModal');
-        showToast('Welcome Admin!', 'success');
+        await auth.sendPasswordResetEmail(email);
+        closeModal('forgotPasswordModal');
+        showToast('Password reset link sent! Check your email.', 'success');
+        Security.logSecurityEvent('PASSWORD_RESET_REQUESTED', { email });
     } catch (error) {
-        Security.recordFailedAttempt(email);
-        Security.logSecurityEvent('ADMIN_LOGIN_FAILED', { email });
-        showToast(error.message, 'error');
+        if (error.code === 'auth/user-not-found') {
+            showToast('No account found with this email', 'error');
+        } else {
+            showToast(error.message, 'error');
+        }
     }
 }
 
