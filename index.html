@@ -1279,6 +1279,14 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     Tawk_API.onLoad = function() { Tawk_API.hideWidget(); };
     (function(){ var s=document.createElement("script"); s.async=true; s.src='https://embed.tawk.to/69ad701d811e1a1c36cff0e5/default'; s.charset='UTF-8'; document.head.appendChild(s); })();
     function openChat() { if(Tawk_API.showWidget) { Tawk_API.showWidget(); Tawk_API.maximize(); } }
+    
+    // Auto-open chat if URL has ?openchat=true or ?chat=true
+    window.addEventListener('load', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('openchat') === 'true' || urlParams.get('chat') === 'true') {
+            setTimeout(function() { openChat(); }, 1500);
+        }
+    });
     </script>
 
     <script>
