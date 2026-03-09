@@ -1776,15 +1776,56 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     <!-- Tawk.to -->
     <script>
     var Tawk_API = Tawk_API || {};
-    Tawk_API.onLoad = function() { Tawk_API.hideWidget(); };
-    (function(){ var s=document.createElement("script"); s.async=true; s.src='https://embed.tawk.to/69ad701d811e1a1c36cff0e5/default'; s.charset='UTF-8'; document.head.appendChild(s); })();
-    function openChat() { if(Tawk_API.showWidget) { Tawk_API.showWidget(); Tawk_API.maximize(); } }
+    var Tawk_LoadStart = new Date();
+    var tawkReady = false;
+    
+    Tawk_API.onLoad = function() { 
+        tawkReady = true;
+        Tawk_API.hideWidget(); 
+    };
+    
+    (function(){ 
+        var s = document.createElement("script"); 
+        s.async = true; 
+        s.src = 'https://embed.tawk.to/69ad701d811e1a1c36cff0e5/default'; 
+        s.charset = 'UTF-8'; 
+        s.setAttribute('crossorigin', '*');
+        document.head.appendChild(s); 
+    })();
+    
+    function openChat() {
+        // Try multiple methods to open the chat
+        if (typeof Tawk_API !== 'undefined') {
+            if (Tawk_API.showWidget) {
+                Tawk_API.showWidget();
+            }
+            if (Tawk_API.maximize) {
+                Tawk_API.maximize();
+            }
+            if (Tawk_API.toggle) {
+                Tawk_API.toggle();
+            }
+        }
+        
+        // Fallback: If Tawk isn't ready, try again after a delay
+        if (!tawkReady) {
+            setTimeout(function() {
+                if (Tawk_API.showWidget) Tawk_API.showWidget();
+                if (Tawk_API.maximize) Tawk_API.maximize();
+            }, 1000);
+        }
+        
+        // Ultimate fallback: Open direct chat link in new tab
+        if (!tawkReady && typeof Tawk_API.maximize !== 'function') {
+            window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank');
+        }
+    }
     
     // Auto-open chat if URL has ?openchat=true or ?chat=true
     window.addEventListener('load', function() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('openchat') === 'true' || urlParams.get('chat') === 'true') {
-            setTimeout(function() { openChat(); }, 1500);
+            setTimeout(function() { openChat(); }, 2000);
         }
     });
     </script>
