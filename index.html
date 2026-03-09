@@ -2328,15 +2328,23 @@ function updateNavigation() {
             </div>
         `;
     } else {
+        // Check if user has active application to conditionally show Apply button
+        const hasActiveApp = window.currentUserApplication && 
+            ['pending', 'approved'].includes(window.currentUserApplication.status);
+        
+        const applyButton = hasActiveApp ? '' : `
+            <button class="nav-btn accent" onclick="startNewApplication()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Apply</span>
+            </button>
+        `;
+        
         navActions.innerHTML = `
             <button class="nav-btn" onclick="showView('userDashboard'); loadUserDashboard();">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <span>Dashboard</span>
             </button>
-            <button class="nav-btn accent" onclick="startNewApplication()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Apply</span>
-            </button>
+            ${applyButton}
             <div style="position: relative;">
                 <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
                 <div class="user-dropdown" id="userDropdown">
@@ -2400,22 +2408,69 @@ async function loadUserDashboard() {
     document.querySelector('.messages-card').style.display = 'none';
 
     try {
+        console.log('Loading dashboard for user:', currentUser.uid);
+        
+        // Query applications for this user
         const snapshot = await db.collection('applications')
             .where('userId', '==', currentUser.uid)
             .orderBy('createdAt', 'desc')
             .limit(1)
             .get();
 
+        console.log('Found applications:', snapshot.size);
+
         if (!snapshot.empty) {
-            const app = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+            const doc = snapshot.docs[0];
+            const app = { id: doc.id, ...doc.data() };
+            console.log('Application data:', app);
+            
+            // Store current application for later use
+            window.currentUserApplication = app;
+            
             displayUserApplication(app);
             loadUserMessages(app.id);
         } else {
+            console.log('No applications found, showing apply card');
             // Show the "Apply Now" card for new users
             document.getElementById('noApplicationCard').style.display = 'block';
         }
     } catch (err) {
-        console.log('Dashboard error:', err);
+        console.error('Dashboard error:', err.code, err.message);
+        
+        // If it's an index error, try a simpler query
+        if (err.code === 'failed-precondition') {
+            console.log('Index not ready, trying simple query...');
+            try {
+                const simpleSnapshot = await db.collection('applications')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                
+                if (!simpleSnapshot.empty) {
+                    // Get the most recent one manually
+                    let latestApp = null;
+                    let latestTime = 0;
+                    
+                    simpleSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const time = data.createdAt?.toMillis?.() || 0;
+                        if (time > latestTime) {
+                            latestTime = time;
+                            latestApp = { id: doc.id, ...data };
+                        }
+                    });
+                    
+                    if (latestApp) {
+                        window.currentUserApplication = latestApp;
+                        displayUserApplication(latestApp);
+                        loadUserMessages(latestApp.id);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Simple query also failed:', e);
+            }
+        }
+        
         // On error, show apply card
         document.getElementById('noApplicationCard').style.display = 'block';
     }
@@ -2470,6 +2525,10 @@ function displayUserApplication(app) {
     } else {
         document.getElementById('bankInfoCard').style.display = 'none';
     }
+    
+    // Store application and update navigation to hide Apply button
+    window.currentUserApplication = app;
+    updateNavigation();
 }
 
 async function loadUserMessages(appId) {
@@ -2503,7 +2562,27 @@ async function loadUserMessages(appId) {
     }
 }
 
-function startNewApplication() {
+async function startNewApplication() {
+    // Check if user already has a pending/approved application
+    if (currentUser && !currentUser.isGuest) {
+        try {
+            const snapshot = await db.collection('applications')
+                .where('userId', '==', currentUser.uid)
+                .where('status', 'in', ['pending', 'approved'])
+                .limit(1)
+                .get();
+            
+            if (!snapshot.empty) {
+                showToast('You already have an active loan application. Please wait for it to be processed.', 'error');
+                showView('userDashboard');
+                loadUserDashboard();
+                return;
+            }
+        } catch (err) {
+            console.log('Error checking existing application:', err);
+        }
+    }
+    
     showView('applicationForm');
     goToFormStep(1);
     updatePhonePrefix();
