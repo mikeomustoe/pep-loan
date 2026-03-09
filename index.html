@@ -2350,6 +2350,14 @@ async function loadUserDashboard() {
 
     document.getElementById('dashboardUserName').textContent = currentUser.displayName || currentUser.email || 'User';
 
+    // First, hide all cards
+    document.getElementById('loanStatusCard').style.display = 'none';
+    document.getElementById('noApplicationCard').style.display = 'none';
+    document.getElementById('processingCard').style.display = 'none';
+    document.getElementById('bankInfoCard').style.display = 'none';
+    document.getElementById('userProfileCard').style.display = 'none';
+    document.querySelector('.messages-card').style.display = 'none';
+
     try {
         const snapshot = await db.collection('applications')
             .where('userId', '==', currentUser.uid)
@@ -2362,51 +2370,64 @@ async function loadUserDashboard() {
             displayUserApplication(app);
             loadUserMessages(app.id);
         } else {
-            document.getElementById('loanStatusCard').style.display = 'none';
+            // Show the "Apply Now" card for new users
             document.getElementById('noApplicationCard').style.display = 'block';
-            // Hide messages card for new users
-            document.querySelector('.messages-card').style.display = 'none';
         }
     } catch (err) {
         console.log('Dashboard error:', err);
+        // On error, show apply card
+        document.getElementById('noApplicationCard').style.display = 'block';
     }
 }
 
 function displayUserApplication(app) {
+    console.log('Displaying application:', app); // Debug log
+    
     document.getElementById('noApplicationCard').style.display = 'none';
     document.getElementById('processingCard').style.display = 'none';
     document.getElementById('loanStatusCard').style.display = 'block';
-    // Show messages card
     document.querySelector('.messages-card').style.display = 'block';
 
     const badge = document.getElementById('statusBadge');
-    badge.textContent = app.status.charAt(0).toUpperCase() + app.status.slice(1);
-    badge.className = 'status-badge ' + app.status;
+    const status = app.status || 'pending';
+    badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    badge.className = 'status-badge ' + status;
 
-    document.getElementById('loanStatusCard').className = 'status-card ' + app.status;
-    document.getElementById('dashCurrency').textContent = app.currency || 'PGK';
-    document.getElementById('dashLoanAmount').textContent = (app.loanAmount || 0).toLocaleString();
-    document.getElementById('dashRepayment').textContent = (app.repayment || 6) + ' mo';
-    document.getElementById('dashMonthly').textContent = (app.currency || 'PGK') + ' ' + Math.round((app.loanAmount || 0) / (app.repayment || 6)).toLocaleString();
+    document.getElementById('loanStatusCard').className = 'status-card ' + status;
+    
+    const currency = app.currency || 'PGK';
+    const loanAmount = app.loanAmount || 0;
+    const repayment = app.repayment || 6;
+    
+    document.getElementById('dashCurrency').textContent = currency;
+    document.getElementById('dashLoanAmount').textContent = loanAmount.toLocaleString();
+    document.getElementById('dashRepayment').textContent = repayment + ' mo';
+    document.getElementById('dashMonthly').textContent = currency + ' ' + Math.round(loanAmount / repayment).toLocaleString();
     document.getElementById('dashPurpose').textContent = app.purpose || '-';
     
-    const date = app.createdAt?.toDate ? app.createdAt.toDate() : new Date(app.createdAt || Date.now());
-    document.getElementById('dashDate').textContent = date.toLocaleDateString();
+    let dateStr = '-';
+    if (app.createdAt) {
+        const date = app.createdAt.toDate ? app.createdAt.toDate() : new Date(app.createdAt);
+        dateStr = date.toLocaleDateString();
+    }
+    document.getElementById('dashDate').textContent = dateStr;
 
-    // Show deposit action for pending and approved applications
-    if (app.status === 'approved' || app.status === 'pending') {
+    // Always show deposit action for pending and approved applications
+    if (status === 'approved' || status === 'pending') {
         document.getElementById('depositAction').style.display = 'block';
-        document.getElementById('dashDeposit').textContent = (app.currency || 'PGK') + ' ' + Math.round((app.loanAmount || 0) * 0.05).toLocaleString();
+        document.getElementById('dashDeposit').textContent = currency + ' ' + Math.round(loanAmount * 0.05).toLocaleString();
     } else {
         document.getElementById('depositAction').style.display = 'none';
     }
     
-    // Show user profile card
+    // Always show user profile card
     displayUserProfile(app);
     
-    // Show bank info card for approved/pending
-    if (app.status === 'approved' || app.status === 'pending') {
+    // Always show bank info card for pending/approved
+    if (status === 'approved' || status === 'pending') {
         displayBankInfo(app);
+    } else {
+        document.getElementById('bankInfoCard').style.display = 'none';
     }
 }
 
@@ -3206,6 +3227,21 @@ let lastSubmittedApp = null;
 function startProcessingAnimation(application) {
     lastSubmittedApp = application;
     
+    // Reset step indicators first
+    const stepTexts = [
+        '✓ Verifying identity...',
+        '◯ Checking eligibility...',
+        '◯ Calculating loan terms...',
+        '◯ Final approval...'
+    ];
+    ['step1', 'step2', 'step3', 'step4'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.className = 'step-item' + (i === 0 ? ' active' : '');
+        el.innerHTML = stepTexts[i];
+    });
+    document.getElementById('progressBarFill').style.width = '0%';
+    document.getElementById('progressPercentage').textContent = '0%';
+    
     // Show processing card, hide others
     document.getElementById('processingCard').style.display = 'block';
     document.getElementById('loanStatusCard').style.display = 'none';
@@ -3218,6 +3254,9 @@ function startProcessingAnimation(application) {
     const steps = ['step1', 'step2', 'step3', 'step4'];
     let currentStep = 0;
     
+    // Clear any existing interval
+    if (processingInterval) clearInterval(processingInterval);
+    
     processingInterval = setInterval(() => {
         progress += Math.random() * 3 + 1;
         
@@ -3227,8 +3266,12 @@ function startProcessingAnimation(application) {
             
             // Complete all steps
             steps.forEach(s => {
-                document.getElementById(s).classList.add('completed');
-                document.getElementById(s).innerHTML = '✓ ' + document.getElementById(s).innerHTML.substring(2);
+                const el = document.getElementById(s);
+                el.classList.remove('active');
+                el.classList.add('completed');
+                if (!el.innerHTML.startsWith('✓')) {
+                    el.innerHTML = '✓' + el.innerHTML.substring(1);
+                }
             });
             
             document.getElementById('progressBarFill').style.width = '100%';
@@ -3251,9 +3294,12 @@ function startProcessingAnimation(application) {
         for (let i = 0; i < stepThresholds.length; i++) {
             if (progress >= stepThresholds[i] && currentStep <= i) {
                 if (i > 0) {
-                    document.getElementById(steps[i-1]).classList.remove('active');
-                    document.getElementById(steps[i-1]).classList.add('completed');
-                    document.getElementById(steps[i-1]).innerHTML = '✓ ' + document.getElementById(steps[i-1]).innerHTML.substring(2);
+                    const prevEl = document.getElementById(steps[i-1]);
+                    prevEl.classList.remove('active');
+                    prevEl.classList.add('completed');
+                    if (!prevEl.innerHTML.startsWith('✓')) {
+                        prevEl.innerHTML = '✓' + prevEl.innerHTML.substring(1);
+                    }
                 }
                 document.getElementById(steps[i]).classList.add('active');
                 currentStep = i + 1;
