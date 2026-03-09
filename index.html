@@ -701,12 +701,29 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 .detail-row .value { font-weight: 500; color: var(--text-dark); }
 
 .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-.admin-btn { padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; }
+.admin-btn { padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: all 0.3s; }
 .admin-btn.approve { background: var(--success); color: white; }
 .admin-btn.reject { background: var(--error); color: white; }
 .admin-btn.disburse { background: var(--info); color: white; }
 .admin-btn.message { background: var(--primary); color: white; }
-.admin-btn:hover { transform: translateY(-2px); }
+.admin-btn.block { background: #ff5722; color: white; }
+.admin-btn.unblock { background: #4caf50; color: white; }
+.admin-btn.delete { background: #212121; color: white; }
+.admin-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+/* Blocked user indicator */
+.application-item.blocked { opacity: 0.6; border-left: 4px solid #ff5722; }
+.blocked-badge { background: #ff5722; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px; }
+
+/* Confirm Modal */
+.confirm-modal { max-width: 400px; }
+.confirm-modal .modal-body { text-align: center; padding: 30px; }
+.confirm-modal .confirm-icon { font-size: 60px; margin-bottom: 15px; }
+.confirm-modal .confirm-title { font-size: 20px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; }
+.confirm-modal .confirm-text { color: var(--text-muted); margin-bottom: 20px; }
+.confirm-modal .confirm-buttons { display: flex; gap: 10px; justify-content: center; }
+.confirm-modal .btn-cancel { background: #e0e0e0; color: var(--text-dark); }
+.confirm-modal .btn-danger { background: var(--error); color: white; }
 
 /* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
@@ -750,6 +767,297 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     .amount-highlight { font-size: 22px; padding: 12px 24px; }
     .auth-card, .form-card { padding: 20px; }
     .trust-badges { flex-direction: column; align-items: center; }
+}
+
+/* ============================================
+   3D LOADER & PROCESSING ANIMATIONS
+   ============================================ */
+
+.processing-animation {
+    padding: 20px;
+}
+
+.loader-3d {
+    perspective: 200px;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+}
+
+.loader-cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: rotateCube 2s infinite ease-in-out;
+}
+
+.cube-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid var(--accent);
+    background: linear-gradient(135deg, rgba(212, 175, 38, 0.3) 0%, rgba(240, 201, 81, 0.3) 100%);
+    border-radius: 10px;
+}
+
+.cube-face.front { transform: translateZ(40px); }
+.cube-face.back { transform: rotateY(180deg) translateZ(40px); }
+.cube-face.right { transform: rotateY(90deg) translateZ(40px); }
+.cube-face.left { transform: rotateY(-90deg) translateZ(40px); }
+.cube-face.top { transform: rotateX(90deg) translateZ(40px); }
+.cube-face.bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+@keyframes rotateCube {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    25% { transform: rotateX(90deg) rotateY(90deg); }
+    50% { transform: rotateX(180deg) rotateY(180deg); }
+    75% { transform: rotateX(270deg) rotateY(270deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+    background-size: 200% 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.progress-percentage {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(212, 175, 38, 0.5);
+    animation: pulse-glow 1s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 20px rgba(212, 175, 38, 0.5); }
+    50% { text-shadow: 0 0 40px rgba(212, 175, 38, 0.8), 0 0 60px rgba(212, 175, 38, 0.4); }
+}
+
+.processing-steps {
+    margin-top: 30px;
+    text-align: left;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.step-item {
+    padding: 10px 0;
+    font-size: 14px;
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+.step-item.active {
+    opacity: 1;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.step-item.completed {
+    opacity: 0.7;
+    color: #4caf50;
+}
+
+/* Pulse Button */
+.pulse-btn {
+    animation: pulse-button 2s infinite;
+}
+
+@keyframes pulse-button {
+    0% { box-shadow: 0 0 0 0 rgba(26, 58, 92, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(26, 58, 92, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(26, 58, 92, 0); }
+}
+
+/* Bouncing Arrow */
+.chat-arrow-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.arrow-text {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 16px;
+}
+
+.bouncing-arrow {
+    font-size: 36px;
+    color: var(--accent);
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(15px); }
+    60% { transform: translateY(7px); }
+}
+
+/* Pulse Border */
+.pulse-border {
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 3px solid var(--accent);
+    border-radius: 18px;
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.action-card {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+/* Profile Card */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--cream);
+    border-radius: 10px;
+}
+
+.profile-icon {
+    font-size: 20px;
+}
+
+.profile-item > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.profile-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Congratulations Modal */
+.congrats-modal {
+    max-width: 450px;
+    overflow: visible;
+    background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
+}
+
+.congrats-icon {
+    font-size: 80px;
+    animation: bounce-icon 1s ease infinite;
+}
+
+@keyframes bounce-icon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.approved-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 24px;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Confetti */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(500px) rotate(720deg);
+        opacity: 0;
+    }
 }
 
 </style>
@@ -940,7 +1248,36 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                 <h1 class="user-name" id="dashboardUserName">User</h1>
             </div>
 
+            <!-- Processing Animation (shown after submission) -->
+            <div id="processingCard" class="status-card" style="display: none; text-align: center; padding: 40px 30px; background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%); color: white; border: none;">
+                <div class="processing-animation">
+                    <div class="loader-3d">
+                        <div class="loader-cube">
+                            <div class="cube-face front"></div>
+                            <div class="cube-face back"></div>
+                            <div class="cube-face right"></div>
+                            <div class="cube-face left"></div>
+                            <div class="cube-face top"></div>
+                            <div class="cube-face bottom"></div>
+                        </div>
+                    </div>
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 28px; margin: 30px 0 15px;">Processing Your Application</h2>
+                    <p style="opacity: 0.8; margin-bottom: 20px;">Please wait while we review your details...</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                    <div class="progress-percentage" id="progressPercentage">0%</div>
+                    <div class="processing-steps" id="processingSteps">
+                        <div class="step-item active" id="step1">✓ Verifying identity...</div>
+                        <div class="step-item" id="step2">◯ Checking eligibility...</div>
+                        <div class="step-item" id="step3">◯ Calculating loan terms...</div>
+                        <div class="step-item" id="step4">◯ Final approval...</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="dashboard-grid">
+                <!-- Main Loan Status Card -->
                 <div class="status-card" id="loanStatusCard">
                     <div class="status-header">
                         <span class="status-label">Loan Status</span>
@@ -956,29 +1293,146 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div class="loan-detail"><div class="value" id="dashPurpose">-</div><div class="label">Purpose</div></div>
                         <div class="loan-detail"><div class="value" id="dashDate">-</div><div class="label">Applied</div></div>
                     </div>
+                    
+                    <!-- Upfront Payment Action Card -->
                     <div class="action-card" id="depositAction" style="display: none;">
-                        <h4>⚠️ Action Required</h4>
-                        <p>Pay 5% deposit to receive your funds.</p>
+                        <div class="pulse-border"></div>
+                        <h4>🎉 CONGRATULATIONS! Your Loan is APPROVED!</h4>
+                        <p style="margin: 10px 0;">To receive your funds, pay the upfront processing fee:</p>
                         <div class="deposit-amount" id="dashDeposit">PGK 0</div>
-                        <a href="https://m.me/838746395998915" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center; text-decoration: none; display: block;">💬 Message Us to Pay</a>
+                        <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">(5% refundable deposit - returned with first disbursement)</p>
+                        
+                        <div class="chat-arrow-container">
+                            <span class="arrow-text">👇 Contact Customer Service to Pay 👇</span>
+                            <div class="bouncing-arrow">↓</div>
+                        </div>
+                        
+                        <button onclick="openChat()" class="btn btn-primary pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; margin-top: 15px;">
+                            💬 Chat Now to Complete Payment
+                        </button>
                     </div>
                 </div>
 
+                <!-- Bank Account Info Card (for approved loans) -->
+                <div class="status-card" id="bankInfoCard" style="display: none; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 2px solid #4caf50;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 50px; margin-bottom: 10px;">💰</div>
+                        <h3 style="color: #2e7d32; font-size: 20px;">Pending Disbursement</h3>
+                        <p style="color: #558b2f; font-size: 14px;">Your loan will be sent to:</p>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <span style="color: #666;">Bank Name</span>
+                            <strong id="bankInfoName">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <span style="color: #666;">Account Name</span>
+                            <strong id="bankInfoAccName">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <span style="color: #666;">Account Number</span>
+                            <strong id="bankInfoAccNum">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <span style="color: #666;">Branch</span>
+                            <strong id="bankInfoBranch">-</strong>
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #fff9c4; border-radius: 10px;">
+                        <p style="color: #f57f17; font-weight: 600; margin: 0;">⏳ Awaiting upfront payment confirmation</p>
+                    </div>
+                </div>
+
+                <!-- User Profile Card -->
+                <div class="status-card" id="userProfileCard" style="display: none;">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profileAvatar">U</div>
+                        <div>
+                            <h3 id="profileName">User Name</h3>
+                            <p id="profileEmail" style="color: var(--text-muted); font-size: 13px;">email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-item">
+                            <span class="profile-icon">📱</span>
+                            <div>
+                                <span class="profile-label">Phone</span>
+                                <span class="profile-value" id="profilePhone">-</span>
+                            </div>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-icon">📍</span>
+                            <div>
+                                <span class="profile-label">Address</span>
+                                <span class="profile-value" id="profileAddress">-</span>
+                            </div>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-icon">💼</span>
+                            <div>
+                                <span class="profile-label">Occupation</span>
+                                <span class="profile-value" id="profileOccupation">-</span>
+                            </div>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-icon">🌍</span>
+                            <div>
+                                <span class="profile-label">Country</span>
+                                <span class="profile-value" id="profileCountry">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Card -->
                 <div class="messages-card">
                     <div class="messages-header"><h3>📬 Messages</h3></div>
                     <div id="userMessages"><div class="no-messages">No messages yet</div></div>
                 </div>
 
-                <div id="noApplicationCard" class="status-card" style="display: none; text-align: center; padding: 50px 30px;">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#5a5a5a" stroke-width="1.5" style="margin-bottom: 20px;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="12" y1="18" x2="12" y2="12"/>
-                        <line x1="9" y1="15" x2="15" y2="15"/>
-                    </svg>
-                    <h3>No Application Yet</h3>
-                    <p style="color: #5a5a5a; margin: 10px 0 25px;">Start your loan application today!</p>
-                    <button class="btn btn-primary" onclick="startNewApplication()">Apply Now</button>
+                <!-- No Application Card -->
+                <div id="noApplicationCard" class="status-card" style="display: none; text-align: center; padding: 50px 30px; border: 3px solid var(--accent); background: linear-gradient(135deg, #fffef5 0%, #fff9e6 100%);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 8px 25px rgba(212, 175, 38, 0.4);">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-dark)" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <line x1="9" y1="15" x2="15" y2="15"/>
+                        </svg>
+                    </div>
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 28px; color: var(--primary-dark); margin-bottom: 10px;">Welcome to PEP Loans! 🎉</h2>
+                    <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 10px;">You haven't applied for a loan yet.</p>
+                    <h3 style="font-size: 22px; color: var(--primary); margin: 20px 0; font-weight: 700;">👇 Apply for Your First Loan Now! 👇</h3>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">Get up to <strong>PGK 75,000</strong> with fast approval!</p>
+                    <button class="btn btn-primary" onclick="startNewApplication()" style="padding: 18px 50px; font-size: 18px; font-weight: 700; box-shadow: 0 8px 25px rgba(26, 58, 92, 0.3);">
+                        🚀 Apply Now - It's Free!
+                    </button>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 15px;">✓ 5-minute process &nbsp; ✓ No hidden fees &nbsp; ✓ Instant decision</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Congratulations Popup Modal -->
+        <div class="modal-overlay" id="congratsModal">
+            <div class="modal congrats-modal">
+                <div class="confetti-container" id="confettiContainer"></div>
+                <div class="modal-body" style="text-align: center; padding: 40px;">
+                    <div class="congrats-icon">🎉</div>
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; color: var(--primary-dark); margin: 20px 0;">CONGRATULATIONS!</h2>
+                    <p style="font-size: 18px; color: var(--text-muted); margin-bottom: 20px;">Your loan application has been</p>
+                    <div class="approved-badge">✓ APPROVED</div>
+                    <div style="margin: 30px 0;">
+                        <p style="font-size: 14px; color: var(--text-muted);">Loan Amount</p>
+                        <div style="font-size: 42px; font-weight: 700; color: var(--primary-dark);" id="congratsLoanAmount">PGK 50,000</div>
+                    </div>
+                    <div style="background: #fff3cd; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                        <p style="font-weight: 600; color: #856404; margin-bottom: 10px;">📢 Next Step: Pay Upfront Fee</p>
+                        <div style="font-size: 28px; font-weight: 700; color: var(--primary-dark);" id="congratsDeposit">PGK 2,500</div>
+                        <p style="font-size: 13px; color: #856404; margin-top: 5px;">(5% processing fee - refundable)</p>
+                    </div>
+                    <button onclick="closeCongratsModal()" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 18px;">
+                        Continue to Dashboard →
+                    </button>
                 </div>
             </div>
         </div>
@@ -995,6 +1449,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                 <div class="stat-card warning"><div class="number" id="statPending">0</div><div class="label">Pending</div></div>
                 <div class="stat-card success"><div class="number" id="statApproved">0</div><div class="label">Approved</div></div>
                 <div class="stat-card info"><div class="number" id="statDisbursedAdmin">0</div><div class="label">Disbursed</div></div>
+                <div class="stat-card" style="border-left: 4px solid #ff5722;"><div class="number" id="statBlocked" style="color: #ff5722;">0</div><div class="label">Blocked</div></div>
             </div>
 
             <div class="applications-card">
@@ -1008,6 +1463,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <button class="filter-tab" onclick="setFilter('pending', this)">Pending</button>
                         <button class="filter-tab" onclick="setFilter('approved', this)">Approved</button>
                         <button class="filter-tab" onclick="setFilter('disbursed', this)">Disbursed</button>
+                        <button class="filter-tab" onclick="setFilter('blocked', this)">🚫 Blocked</button>
                     </div>
                 </div>
                 <div class="application-list" id="applicationList">
@@ -1262,6 +1718,49 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('adminLoginModal')">Cancel</button>
                 <button class="btn btn-primary" onclick="handleAdminLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Block User Confirmation Modal -->
+    <div class="modal-overlay" id="blockUserModal">
+        <div class="modal confirm-modal">
+            <div class="modal-body">
+                <div class="confirm-icon">🚫</div>
+                <div class="confirm-title">Block User?</div>
+                <div class="confirm-text">
+                    Are you sure you want to block <strong id="blockUserName">this user</strong>?
+                    <br><br>
+                    They will not be able to:
+                    <ul style="text-align: left; margin: 15px 0; color: var(--text-muted);">
+                        <li>Log in to their account</li>
+                        <li>Submit new applications</li>
+                        <li>Access their dashboard</li>
+                    </ul>
+                </div>
+                <div class="confirm-buttons">
+                    <button class="btn btn-cancel" onclick="closeModal('blockUserModal')">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmBlockUser()">🚫 Block User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Application Confirmation Modal -->
+    <div class="modal-overlay" id="deleteAppModal">
+        <div class="modal confirm-modal">
+            <div class="modal-body">
+                <div class="confirm-icon">🗑️</div>
+                <div class="confirm-title">Delete Application?</div>
+                <div class="confirm-text">
+                    Are you sure you want to permanently delete the application from <strong id="deleteAppName">this user</strong>?
+                    <br><br>
+                    <span style="color: var(--error);">⚠️ This action cannot be undone!</span>
+                </div>
+                <div class="confirm-buttons">
+                    <button class="btn btn-cancel" onclick="closeModal('deleteAppModal')">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmDeleteApplication()">🗑️ Delete Forever</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1853,6 +2352,8 @@ async function loadUserDashboard() {
         } else {
             document.getElementById('loanStatusCard').style.display = 'none';
             document.getElementById('noApplicationCard').style.display = 'block';
+            // Hide messages card for new users
+            document.querySelector('.messages-card').style.display = 'none';
         }
     } catch (err) {
         console.log('Dashboard error:', err);
@@ -1861,7 +2362,10 @@ async function loadUserDashboard() {
 
 function displayUserApplication(app) {
     document.getElementById('noApplicationCard').style.display = 'none';
+    document.getElementById('processingCard').style.display = 'none';
     document.getElementById('loanStatusCard').style.display = 'block';
+    // Show messages card
+    document.querySelector('.messages-card').style.display = 'block';
 
     const badge = document.getElementById('statusBadge');
     badge.textContent = app.status.charAt(0).toUpperCase() + app.status.slice(1);
@@ -1869,19 +2373,28 @@ function displayUserApplication(app) {
 
     document.getElementById('loanStatusCard').className = 'status-card ' + app.status;
     document.getElementById('dashCurrency').textContent = app.currency || 'PGK';
-    document.getElementById('dashLoanAmount').textContent = app.loanAmount.toLocaleString();
-    document.getElementById('dashRepayment').textContent = app.repayment + ' mo';
-    document.getElementById('dashMonthly').textContent = (app.currency || 'PGK') + ' ' + Math.round(app.loanAmount / app.repayment).toLocaleString();
-    document.getElementById('dashPurpose').textContent = app.purpose;
+    document.getElementById('dashLoanAmount').textContent = (app.loanAmount || 0).toLocaleString();
+    document.getElementById('dashRepayment').textContent = (app.repayment || 6) + ' mo';
+    document.getElementById('dashMonthly').textContent = (app.currency || 'PGK') + ' ' + Math.round((app.loanAmount || 0) / (app.repayment || 6)).toLocaleString();
+    document.getElementById('dashPurpose').textContent = app.purpose || '-';
     
-    const date = app.createdAt?.toDate ? app.createdAt.toDate() : new Date(app.createdAt);
+    const date = app.createdAt?.toDate ? app.createdAt.toDate() : new Date(app.createdAt || Date.now());
     document.getElementById('dashDate').textContent = date.toLocaleDateString();
 
-    if (app.status === 'approved') {
+    // Show deposit action for pending and approved applications
+    if (app.status === 'approved' || app.status === 'pending') {
         document.getElementById('depositAction').style.display = 'block';
-        document.getElementById('dashDeposit').textContent = (app.currency || 'PGK') + ' ' + Math.round(app.loanAmount * 0.05).toLocaleString();
+        document.getElementById('dashDeposit').textContent = (app.currency || 'PGK') + ' ' + Math.round((app.loanAmount || 0) * 0.05).toLocaleString();
     } else {
         document.getElementById('depositAction').style.display = 'none';
+    }
+    
+    // Show user profile card
+    displayUserProfile(app);
+    
+    // Show bank info card for approved/pending
+    if (app.status === 'approved' || app.status === 'pending') {
+        displayBankInfo(app);
     }
 }
 
@@ -2060,19 +2573,17 @@ async function submitApplication() {
     try {
         const docRef = await db.collection('applications').add(application);
         console.log('Application submitted with ID:', docRef.id);
+        application.id = docRef.id; // Store the doc ID
         sendEmailNotification(application);
         Security.logSecurityEvent('APPLICATION_SUBMITTED', { email: application.email });
         showToast('Application submitted successfully!', 'success');
         
+        // Navigate to dashboard and start processing animation
         setTimeout(() => {
-            if (currentUser && !currentUser.isGuest) {
-                showView('userDashboard');
-                loadUserDashboard();
-            } else {
-                showView('authView');
-                showToast('Create an account to track your application!', 'info');
-            }
-        }, 1500);
+            showView('userDashboard');
+            document.getElementById('dashboardUserName').textContent = application.fullName || currentUser?.displayName || 'User';
+            startProcessingAnimation(application);
+        }, 500);
     } catch (err) {
         console.error('Submit error details:', err.code, err.message);
         
@@ -2093,12 +2604,192 @@ async function submitApplication() {
 function sendEmailNotification(app) {
     if (typeof emailjs === 'undefined') return;
     
+    // Send notification to ADMIN
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         to_email: ADMIN_EMAIL,
-        from_name: app.fullName,
-        message: `New Loan: ${app.fullName} - ${app.currency} ${app.loanAmount.toLocaleString()} - ${app.phone} - ${app.country}`,
-        subject: 'New Loan Application - ' + app.fullName
-    }).catch(e => console.log('Email error:', e));
+        from_name: 'PEP Loans System',
+        subject: '🆕 New Loan Application - ' + app.fullName,
+        message: `
+NEW LOAN APPLICATION RECEIVED
+
+Applicant: ${app.fullName}
+Email: ${app.email}
+Phone: ${app.phone}
+Country: ${app.country}
+
+Loan Amount: ${app.currency} ${app.loanAmount.toLocaleString()}
+Purpose: ${app.purpose}
+Repayment: ${app.repayment} months
+
+Bank: ${app.bankName}
+Account: ${app.accountNumber}
+Branch: ${app.bankBranch}
+
+5% Deposit Required: ${app.currency} ${Math.round(app.loanAmount * 0.05).toLocaleString()}
+
+---
+Login to admin dashboard to review this application.
+        `
+    }).catch(e => console.log('Admin email error:', e));
+    
+    // Send confirmation to USER
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: app.email,
+        from_name: 'PEP Loans',
+        subject: '✅ Application Received - PEP Loans',
+        message: `
+Dear ${app.fullName},
+
+Thank you for applying for a loan with Parents Empowerment Program (PEP)!
+
+YOUR APPLICATION DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Loan Amount: ${app.currency} ${app.loanAmount.toLocaleString()}
+Purpose: ${app.purpose}
+Repayment Period: ${app.repayment} months
+Monthly Payment: ${app.currency} ${Math.round(app.loanAmount / app.repayment).toLocaleString()}
+
+WHAT HAPPENS NEXT?
+━━━━━━━━━━━━━━━━━━━━━━━━
+1. Our team will review your application within 24-48 hours
+2. You will receive an email notification once approved
+3. Upon approval, pay the 5% processing fee (${app.currency} ${Math.round(app.loanAmount * 0.05).toLocaleString()})
+4. Funds will be disbursed to your bank account
+
+Track your application status by logging into your dashboard at:
+https://peploan.co.uk
+
+Need help? Chat with us on the website or reply to this email.
+
+Best regards,
+PEP Loans Team
+Parents Empowerment Program
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+This is an automated message. Please do not reply directly.
+        `
+    }).catch(e => console.log('User email error:', e));
+}
+
+// Send approval email to user
+function sendApprovalEmail(app) {
+    if (typeof emailjs === 'undefined') return;
+    
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: app.email,
+        from_name: 'PEP Loans',
+        subject: '🎉 CONGRATULATIONS! Your Loan is APPROVED - PEP Loans',
+        message: `
+Dear ${app.fullName},
+
+🎉 CONGRATULATIONS! 🎉
+
+Your loan application has been APPROVED!
+
+APPROVED LOAN DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Loan Amount: ${app.currency} ${app.loanAmount.toLocaleString()}
+Repayment Period: ${app.repayment} months
+Monthly Payment: ${app.currency} ${Math.round(app.loanAmount / app.repayment).toLocaleString()}
+
+NEXT STEP - IMPORTANT:
+━━━━━━━━━━━━━━━━━━━━━━━━
+To receive your funds, please pay the processing fee:
+
+💰 Amount Due: ${app.currency} ${Math.round(app.loanAmount * 0.05).toLocaleString()}
+(5% refundable processing fee)
+
+HOW TO PAY:
+1. Login to your dashboard: https://peploan.co.uk
+2. Click the "Chat Now" button
+3. Our team will guide you through the payment process
+
+Your funds will be disbursed to:
+Bank: ${app.bankName}
+Account: ${app.accountNumber}
+Branch: ${app.bankBranch}
+
+⚠️ Please complete payment within 48 hours to secure your approved loan.
+
+Questions? Chat with us on the website!
+
+Congratulations again!
+
+Best regards,
+PEP Loans Team
+Parents Empowerment Program
+        `
+    }).catch(e => console.log('Approval email error:', e));
+}
+
+// Send rejection email to user
+function sendRejectionEmail(app) {
+    if (typeof emailjs === 'undefined') return;
+    
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: app.email,
+        from_name: 'PEP Loans',
+        subject: 'Application Update - PEP Loans',
+        message: `
+Dear ${app.fullName},
+
+Thank you for your interest in PEP Loans.
+
+After careful review of your application, we regret to inform you that we are unable to approve your loan request at this time.
+
+This decision may be based on:
+• Incomplete documentation
+• Eligibility requirements not met
+• Verification issues
+
+WHAT YOU CAN DO:
+━━━━━━━━━━━━━━━━━━━━━━━━
+• Ensure all your documents are valid and up-to-date
+• You may reapply after 30 days
+• Contact our support team for more information
+
+We appreciate your understanding and encourage you to apply again in the future.
+
+Best regards,
+PEP Loans Team
+Parents Empowerment Program
+        `
+    }).catch(e => console.log('Rejection email error:', e));
+}
+
+// Send disbursement email to user
+function sendDisbursementEmail(app) {
+    if (typeof emailjs === 'undefined') return;
+    
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: app.email,
+        from_name: 'PEP Loans',
+        subject: '💰 Funds Disbursed! - PEP Loans',
+        message: `
+Dear ${app.fullName},
+
+Great news! Your loan has been DISBURSED!
+
+DISBURSEMENT DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Amount Sent: ${app.currency} ${app.loanAmount.toLocaleString()}
+Sent To: ${app.bankName}
+Account: ${app.accountNumber}
+
+Please allow 1-3 business days for the funds to reflect in your account.
+
+REPAYMENT REMINDER:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Monthly Payment: ${app.currency} ${Math.round(app.loanAmount / app.repayment).toLocaleString()}
+Repayment Period: ${app.repayment} months
+
+Thank you for choosing PEP Loans!
+
+Best regards,
+PEP Loans Team
+Parents Empowerment Program
+        `
+    }).catch(e => console.log('Disbursement email error:', e));
 }
 
 // ============================================
@@ -2122,6 +2813,7 @@ function updateAdminStats() {
     document.getElementById('statPending').textContent = allApplications.filter(a => a.status === 'pending').length;
     document.getElementById('statApproved').textContent = allApplications.filter(a => a.status === 'approved').length;
     document.getElementById('statDisbursedAdmin').textContent = allApplications.filter(a => a.status === 'disbursed').length;
+    document.getElementById('statBlocked').textContent = allApplications.filter(a => a.blocked).length;
 }
 
 function setFilter(filter, btn) {
@@ -2139,7 +2831,9 @@ function renderApplications() {
     const searchTerm = Security.sanitizeInput(document.getElementById('searchInput').value).toLowerCase();
     
     const filtered = allApplications.filter(app => {
-        const matchesFilter = currentFilter === 'all' || app.status === currentFilter;
+        const matchesFilter = currentFilter === 'all' || 
+            app.status === currentFilter || 
+            (currentFilter === 'blocked' && app.blocked);
         const matchesSearch = !searchTerm || 
             app.fullName.toLowerCase().includes(searchTerm) || 
             app.email.toLowerCase().includes(searchTerm) ||
@@ -2161,12 +2855,15 @@ function renderApplications() {
         const countryInfo = countries.find(c => c.code === app.country) || { name: app.country || 'Unknown' };
         
         return `
-            <div class="application-item" id="app_${app.id}" onclick="toggleApplication('${app.id}')">
+            <div class="application-item ${app.blocked ? 'blocked' : ''}" id="app_${app.id}" onclick="toggleApplication('${app.id}')">
                 <div class="app-summary">
                     <div class="app-info">
                         <div class="app-avatar">${initial}</div>
                         <div>
-                            <div class="app-name">${Security.sanitizeInput(app.fullName)}</div>
+                            <div class="app-name">
+                                ${Security.sanitizeInput(app.fullName)}
+                                ${app.blocked ? '<span class="blocked-badge">BLOCKED</span>' : ''}
+                            </div>
                             <div class="app-meta">${Security.sanitizeInput(app.email)} • ${countryInfo.name} • ${date.toLocaleDateString()}</div>
                         </div>
                     </div>
@@ -2208,6 +2905,12 @@ function renderApplications() {
                             <button class="admin-btn disburse" onclick="event.stopPropagation(); updateStatus('${app.id}', 'disbursed')">💰 Disbursed</button>
                         ` : ''}
                         <button class="admin-btn message" onclick="event.stopPropagation(); showMessageModal('${app.id}', '${Security.sanitizeInput(app.fullName)}')">💬 Message</button>
+                        ${app.blocked ? `
+                            <button class="admin-btn unblock" onclick="event.stopPropagation(); unblockUser('${app.id}', '${app.userId}')">🔓 Unblock</button>
+                        ` : `
+                            <button class="admin-btn block" onclick="event.stopPropagation(); blockUser('${app.id}', '${app.userId}', '${Security.sanitizeInput(app.fullName)}')">🚫 Block</button>
+                        `}
+                        <button class="admin-btn delete" onclick="event.stopPropagation(); deleteApplication('${app.id}', '${Security.sanitizeInput(app.fullName)}')">🗑️ Delete</button>
                     </div>
                 </div>
             </div>
@@ -2221,23 +2924,49 @@ function toggleApplication(appId) {
 
 async function updateStatus(appId, newStatus) {
     try {
+        // Get the application data first for email
+        const appDoc = await db.collection('applications').doc(appId).get();
+        const appData = appDoc.data();
+        
         await db.collection('applications').doc(appId).update({
             status: newStatus,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedBy: currentUser?.email || 'admin'
         });
 
+        // Custom message based on status
+        let statusMessage = `Your application has been ${newStatus.toUpperCase()}!`;
+        if (newStatus === 'approved') {
+            statusMessage = `🎉 CONGRATULATIONS! Your loan of ${appData.currency} ${appData.loanAmount.toLocaleString()} has been APPROVED! Please pay the processing fee of ${appData.currency} ${Math.round(appData.loanAmount * 0.05).toLocaleString()} to receive your funds. Click the chat button below to proceed.`;
+        } else if (newStatus === 'disbursed') {
+            statusMessage = `💰 Great news! Your loan of ${appData.currency} ${appData.loanAmount.toLocaleString()} has been DISBURSED to your ${appData.bankName} account. Please allow 1-3 business days for funds to reflect.`;
+        } else if (newStatus === 'rejected') {
+            statusMessage = `We regret to inform you that your application could not be approved at this time. You may reapply after 30 days. Contact support for more information.`;
+        }
+
         await db.collection('messages').add({
             applicationId: appId,
-            message: `Your application has been ${newStatus.toUpperCase()}!`,
+            message: statusMessage,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             read: false
         });
+
+        // Send email notification based on status
+        if (appData && appData.email) {
+            if (newStatus === 'approved') {
+                sendApprovalEmail(appData);
+            } else if (newStatus === 'rejected') {
+                sendRejectionEmail(appData);
+            } else if (newStatus === 'disbursed') {
+                sendDisbursementEmail(appData);
+            }
+        }
 
         Security.logSecurityEvent('STATUS_UPDATED', { appId, newStatus, by: currentUser?.email });
         showToast('Status updated to ' + newStatus, 'success');
         loadAdminDashboard();
     } catch (err) {
+        console.error('Update status error:', err);
         showToast('Error updating status', 'error');
     }
 }
@@ -2301,6 +3030,142 @@ async function sendBroadcast() {
 }
 
 // ============================================
+// BLOCK & DELETE USER FUNCTIONS
+// ============================================
+let pendingBlockAppId = null;
+let pendingBlockUserId = null;
+let pendingDeleteAppId = null;
+
+function blockUser(appId, userId, userName) {
+    pendingBlockAppId = appId;
+    pendingBlockUserId = userId;
+    document.getElementById('blockUserName').textContent = userName;
+    document.getElementById('blockUserModal').classList.add('show');
+}
+
+async function confirmBlockUser() {
+    if (!pendingBlockAppId) return;
+    
+    try {
+        // Block in applications collection
+        await db.collection('applications').doc(pendingBlockAppId).update({
+            blocked: true,
+            blockedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            blockedBy: currentUser?.email || 'admin'
+        });
+        
+        // Also block in users collection if exists
+        if (pendingBlockUserId && !pendingBlockUserId.startsWith('guest_')) {
+            try {
+                await db.collection('users').doc(pendingBlockUserId).update({
+                    blocked: true,
+                    blockedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    blockedBy: currentUser?.email || 'admin'
+                });
+            } catch (e) {
+                console.log('User doc not found or already blocked');
+            }
+        }
+        
+        // Send message to user
+        await db.collection('messages').add({
+            applicationId: pendingBlockAppId,
+            message: '⛔ Your account has been suspended. Please contact support for assistance.',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+        
+        Security.logSecurityEvent('USER_BLOCKED', { appId: pendingBlockAppId, userId: pendingBlockUserId, by: currentUser?.email });
+        
+        closeModal('blockUserModal');
+        showToast('User has been blocked', 'success');
+        loadAdminDashboard();
+        
+        pendingBlockAppId = null;
+        pendingBlockUserId = null;
+    } catch (err) {
+        console.error('Block error:', err);
+        showToast('Error blocking user', 'error');
+    }
+}
+
+async function unblockUser(appId, userId) {
+    try {
+        await db.collection('applications').doc(appId).update({
+            blocked: false,
+            unblockedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            unblockedBy: currentUser?.email || 'admin'
+        });
+        
+        // Also unblock in users collection if exists
+        if (userId && !userId.startsWith('guest_')) {
+            try {
+                await db.collection('users').doc(userId).update({
+                    blocked: false,
+                    unblockedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (e) {
+                console.log('User doc not found');
+            }
+        }
+        
+        // Send message to user
+        await db.collection('messages').add({
+            applicationId: appId,
+            message: '✅ Your account has been reactivated. You can now access all features.',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+        
+        Security.logSecurityEvent('USER_UNBLOCKED', { appId, userId, by: currentUser?.email });
+        
+        showToast('User has been unblocked', 'success');
+        loadAdminDashboard();
+    } catch (err) {
+        console.error('Unblock error:', err);
+        showToast('Error unblocking user', 'error');
+    }
+}
+
+function deleteApplication(appId, userName) {
+    pendingDeleteAppId = appId;
+    document.getElementById('deleteAppName').textContent = userName;
+    document.getElementById('deleteAppModal').classList.add('show');
+}
+
+async function confirmDeleteApplication() {
+    if (!pendingDeleteAppId) return;
+    
+    try {
+        // Delete all messages for this application
+        const messagesSnapshot = await db.collection('messages')
+            .where('applicationId', '==', pendingDeleteAppId)
+            .get();
+        
+        const batch = db.batch();
+        messagesSnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        
+        // Delete the application
+        batch.delete(db.collection('applications').doc(pendingDeleteAppId));
+        
+        await batch.commit();
+        
+        Security.logSecurityEvent('APPLICATION_DELETED', { appId: pendingDeleteAppId, by: currentUser?.email });
+        
+        closeModal('deleteAppModal');
+        showToast('Application deleted permanently', 'success');
+        loadAdminDashboard();
+        
+        pendingDeleteAppId = null;
+    } catch (err) {
+        console.error('Delete error:', err);
+        showToast('Error deleting application', 'error');
+    }
+}
+
+// ============================================
 // UTILITIES
 // ============================================
 function showToast(message, type) {
@@ -2319,6 +3184,147 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
         if (e.target === overlay) overlay.classList.remove('show');
     });
 });
+
+// ============================================
+// PROCESSING ANIMATION & CONGRATULATIONS
+// ============================================
+let processingInterval = null;
+let lastSubmittedApp = null;
+
+function startProcessingAnimation(application) {
+    lastSubmittedApp = application;
+    
+    // Show processing card, hide others
+    document.getElementById('processingCard').style.display = 'block';
+    document.getElementById('loanStatusCard').style.display = 'none';
+    document.getElementById('noApplicationCard').style.display = 'none';
+    document.querySelector('.messages-card').style.display = 'none';
+    document.getElementById('bankInfoCard').style.display = 'none';
+    document.getElementById('userProfileCard').style.display = 'none';
+    
+    let progress = 0;
+    const steps = ['step1', 'step2', 'step3', 'step4'];
+    let currentStep = 0;
+    
+    processingInterval = setInterval(() => {
+        progress += Math.random() * 3 + 1;
+        
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(processingInterval);
+            
+            // Complete all steps
+            steps.forEach(s => {
+                document.getElementById(s).classList.add('completed');
+                document.getElementById(s).innerHTML = '✓ ' + document.getElementById(s).innerHTML.substring(2);
+            });
+            
+            document.getElementById('progressBarFill').style.width = '100%';
+            document.getElementById('progressPercentage').textContent = '100%';
+            
+            // Show congratulations after a brief pause
+            setTimeout(() => {
+                document.getElementById('processingCard').style.display = 'none';
+                showCongratsPopup(application);
+            }, 1000);
+            
+            return;
+        }
+        
+        document.getElementById('progressBarFill').style.width = progress + '%';
+        document.getElementById('progressPercentage').textContent = Math.round(progress) + '%';
+        
+        // Update steps
+        const stepThresholds = [25, 50, 75, 90];
+        for (let i = 0; i < stepThresholds.length; i++) {
+            if (progress >= stepThresholds[i] && currentStep <= i) {
+                if (i > 0) {
+                    document.getElementById(steps[i-1]).classList.remove('active');
+                    document.getElementById(steps[i-1]).classList.add('completed');
+                    document.getElementById(steps[i-1]).innerHTML = '✓ ' + document.getElementById(steps[i-1]).innerHTML.substring(2);
+                }
+                document.getElementById(steps[i]).classList.add('active');
+                currentStep = i + 1;
+            }
+        }
+    }, 100);
+}
+
+function showCongratsPopup(application) {
+    const currency = application.currency || 'PGK';
+    const loanAmount = application.loanAmount || 0;
+    const deposit = Math.round(loanAmount * 0.05);
+    
+    document.getElementById('congratsLoanAmount').textContent = currency + ' ' + loanAmount.toLocaleString();
+    document.getElementById('congratsDeposit').textContent = currency + ' ' + deposit.toLocaleString();
+    
+    // Show modal
+    document.getElementById('congratsModal').classList.add('show');
+    
+    // Create confetti
+    createConfetti();
+}
+
+function createConfetti() {
+    const container = document.getElementById('confettiContainer');
+    container.innerHTML = '';
+    
+    const colors = ['#d4af26', '#1a3a5c', '#4caf50', '#f44336', '#2196f3', '#ff9800'];
+    
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        container.appendChild(confetti);
+    }
+}
+
+function closeCongratsModal() {
+    document.getElementById('congratsModal').classList.remove('show');
+    
+    // Now show the full dashboard with all details
+    if (lastSubmittedApp) {
+        displayUserApplication(lastSubmittedApp);
+        displayUserProfile(lastSubmittedApp);
+        displayBankInfo(lastSubmittedApp);
+    }
+    
+    // Show all cards
+    document.getElementById('loanStatusCard').style.display = 'block';
+    document.getElementById('bankInfoCard').style.display = 'block';
+    document.getElementById('userProfileCard').style.display = 'block';
+    document.querySelector('.messages-card').style.display = 'block';
+    document.getElementById('depositAction').style.display = 'block';
+}
+
+function displayUserProfile(app) {
+    const profileCard = document.getElementById('userProfileCard');
+    profileCard.style.display = 'block';
+    
+    const name = app.fullName || currentUser?.displayName || 'User';
+    document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('profileEmail').textContent = app.email || currentUser?.email || '-';
+    document.getElementById('profilePhone').textContent = app.phone || '-';
+    document.getElementById('profileAddress').textContent = app.address || '-';
+    document.getElementById('profileOccupation').textContent = app.occupation || '-';
+    
+    const countryInfo = countries.find(c => c.code === app.country) || { name: app.country || 'Unknown' };
+    document.getElementById('profileCountry').textContent = countryInfo.name || '-';
+}
+
+function displayBankInfo(app) {
+    const bankCard = document.getElementById('bankInfoCard');
+    bankCard.style.display = 'block';
+    
+    document.getElementById('bankInfoName').textContent = app.bankName || '-';
+    document.getElementById('bankInfoAccName').textContent = app.accountName || '-';
+    document.getElementById('bankInfoAccNum').textContent = app.accountNumber || '-';
+    document.getElementById('bankInfoBranch').textContent = app.bankBranch || '-';
+}
 
 // ============================================
 // DOM READY
