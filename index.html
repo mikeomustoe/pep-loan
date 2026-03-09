@@ -2010,14 +2010,29 @@ async function submitApplication() {
     document.getElementById('formStep3').style.display = 'none';
     document.getElementById('formLoading').style.display = 'block';
 
+    // For guest users, sign in anonymously first
+    let userId = currentUser?.uid;
+    if (!userId || currentUser?.isGuest) {
+        try {
+            const anonResult = await auth.signInAnonymously();
+            userId = anonResult.user.uid;
+            currentUser = anonResult.user;
+            currentUser.isGuest = true;
+        } catch (anonErr) {
+            console.log('Anonymous auth error:', anonErr);
+            // Continue with generated ID if anonymous auth fails
+            userId = 'guest_' + Date.now();
+        }
+    }
+
     // Sanitize all inputs
     const application = {
-        userId: currentUser?.uid || 'guest_' + Date.now(),
+        userId: userId,
         fullName: Security.sanitizeInput(document.getElementById('appFullName').value),
         phone: Security.sanitizeInput(document.getElementById('appPhone').value),
         email: Security.sanitizeInput(document.getElementById('appEmail').value),
         address: Security.sanitizeInput(document.getElementById('appAddress').value),
-        age: parseInt(document.getElementById('appAge').value),
+        age: parseInt(document.getElementById('appAge').value) || 0,
         relationship: Security.sanitizeInput(document.getElementById('appRelationship').value),
         occupation: Security.sanitizeInput(document.getElementById('appOccupation').value),
         accountName: Security.sanitizeInput(document.getElementById('appAccountName').value),
@@ -2025,21 +2040,21 @@ async function submitApplication() {
         accountNumber: Security.sanitizeInput(document.getElementById('appAccountNumber').value),
         bankBranch: Security.sanitizeInput(document.getElementById('appBankBranch').value),
         country: selectedCountry?.code || 'PG',
-        loanAmount: parseInt(loanInput.value),
+        loanAmount: parseInt(loanInput.value) || 0,
         purpose: Security.sanitizeInput(purpose),
-        repayment: parseInt(repayInput.value),
-        currency: currentCurrency,
+        repayment: parseInt(repayInput.value) || 6,
+        currency: currentCurrency || 'PGK',
         status: 'pending',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        ipAddress: 'hidden', // Don't store IP for privacy
-        userAgent: navigator.userAgent.substring(0, 100)
+        submittedAt: new Date().toISOString()
     };
 
     try {
-        await db.collection('applications').add(application);
+        const docRef = await db.collection('applications').add(application);
+        console.log('Application submitted with ID:', docRef.id);
         sendEmailNotification(application);
         Security.logSecurityEvent('APPLICATION_SUBMITTED', { email: application.email });
-        showToast('Application submitted!', 'success');
+        showToast('Application submitted successfully!', 'success');
         
         setTimeout(() => {
             if (currentUser && !currentUser.isGuest) {
@@ -2051,8 +2066,17 @@ async function submitApplication() {
             }
         }, 1500);
     } catch (err) {
-        console.log('Submit error:', err);
-        showToast('Error submitting. Please try again.', 'error');
+        console.error('Submit error details:', err.code, err.message);
+        
+        // Show more specific error messages
+        if (err.code === 'permission-denied') {
+            showToast('Permission error. Please check Firebase rules.', 'error');
+        } else if (err.code === 'unavailable') {
+            showToast('Network error. Please check your connection.', 'error');
+        } else {
+            showToast('Error submitting: ' + (err.message || 'Please try again.'), 'error');
+        }
+        
         document.getElementById('formLoading').style.display = 'none';
         document.getElementById('formStep3').style.display = 'block';
     }
