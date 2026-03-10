@@ -19,6 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
     
     <!-- EmailJS -->
@@ -700,6 +701,14 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 .detail-row .label { color: var(--text-muted); }
 .detail-row .value { font-weight: 500; color: var(--text-dark); }
 
+/* Uploaded documents preview */
+.uploaded-docs { display: flex; flex-direction: column; gap: 8px; }
+.doc-preview { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 10px 12px; border-radius: 8px; }
+.doc-label { font-size: 13px; color: var(--text-dark); }
+.view-doc-btn { background: var(--primary); color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s; }
+.view-doc-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+.doc-missing { font-size: 12px; color: #999; padding: 8px 0; }
+
 .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
 .admin-btn { padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: all 0.3s; }
 .admin-btn.approve { background: var(--success); color: white; }
@@ -724,6 +733,55 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 .confirm-modal .confirm-buttons { display: flex; gap: 10px; justify-content: center; }
 .confirm-modal .btn-cancel { background: #e0e0e0; color: var(--text-dark); }
 .confirm-modal .btn-danger { background: var(--error); color: white; }
+
+/* Payment Method Buttons */
+.payment-method-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.payment-method-btn:hover {
+    border-color: var(--primary);
+    background: #f8f9fa;
+}
+
+.payment-method-btn.selected {
+    border-color: #00d4aa;
+    background: linear-gradient(135deg, #e6fff9 0%, #d4ffef 100%);
+    box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+}
+
+.payment-method-btn.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: #00d4aa;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-method-btn {
+    position: relative;
+}
 
 /* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
@@ -924,6 +982,8 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     border: 3px solid var(--accent);
     border-radius: 18px;
     animation: pulse-border 2s infinite;
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 0;
 }
 
 @keyframes pulse-border {
@@ -932,13 +992,39 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     100% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+}
+
+@keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes miniConfetti {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(-50px + 100px * var(--random-x, 0.5)), calc(-100px + 50px * var(--random-y, 0.5))) rotate(720deg); opacity: 0; }
+}
+
 .action-card {
     position: relative;
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
     border-radius: 16px;
     padding: 25px;
     margin-top: 20px;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to allow pulse border to show */
+}
+
+.action-card > * {
+    position: relative;
+    z-index: 1; /* Ensure content is above pulse border */
+}
+
+.action-card button {
+    position: relative;
+    z-index: 10; /* Ensure buttons are clickable */
 }
 
 /* Profile Card */
@@ -1177,9 +1263,18 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         </div>
                     </div>
 
+                    <!-- Bold Register Message -->
+                    <div class="register-cta-box" style="background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%); border: 3px solid var(--accent); border-radius: 16px; padding: 25px; margin: 25px 0; text-align: center; animation: pulse-glow 2s infinite;">
+                        <h2 style="color: var(--primary-dark); font-size: 24px; margin-bottom: 10px; font-weight: 700;">📋 REGISTER NOW to Apply for Your Loan!</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Create a free account in 2 minutes and start your loan application today.</p>
+                        <button class="cta-btn primary" onclick="showView('authView'); setTimeout(() => switchAuthTab('register'), 100);" style="font-size: 20px; padding: 18px 40px; animation: bounce-subtle 1s infinite;">
+                            ✨ Register Now - It's Free! ✨
+                        </button>
+                    </div>
+
                     <div class="cta-buttons">
-                        <button class="cta-btn primary" onclick="showView('authView')">Apply Now →</button>
-                        <button class="cta-btn secondary" onclick="showView('authView')">Login</button>
+                        <button class="cta-btn primary" onclick="showView('authView'); setTimeout(() => switchAuthTab('register'), 100);">Register & Apply →</button>
+                        <button class="cta-btn secondary" onclick="showView('authView')">Already have account? Login</button>
                     </div>
                 </div>
             </div>
@@ -1302,14 +1397,19 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div class="deposit-amount" id="dashDeposit">PGK 0</div>
                         <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">(5% refundable deposit - returned with first disbursement)</p>
                         
-                        <div class="chat-arrow-container">
-                            <span class="arrow-text">👇 Contact Customer Service to Pay 👇</span>
-                            <div class="bouncing-arrow">↓</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                            <div class="chat-arrow-container">
+                                <span class="arrow-text">👇 Contact us to complete payment 👇</span>
+                                <div class="bouncing-arrow">↓</div>
+                            </div>
+                            
+                            <!-- Chat to Pay Button -->
+                            <button type="button" onclick="window.openChat ? window.openChat() : window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank')" class="btn btn-primary pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; cursor: pointer;">
+                                💬 Chat Now to Pay
+                            </button>
+                            
+                            <p style="text-align: center; font-size: 12px; color: var(--primary-dark); margin: 5px 0;">We accept: GCash • Maya • Bank Transfer • PayPal</p>
                         </div>
-                        
-                        <button onclick="openChat()" class="btn btn-primary pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; margin-top: 15px;">
-                            💬 Chat Now to Complete Payment
-                        </button>
                     </div>
                 </div>
 
@@ -1388,6 +1488,48 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                 <div class="messages-card">
                     <div class="messages-header"><h3>📬 Messages</h3></div>
                     <div id="userMessages"><div class="no-messages">No messages yet</div></div>
+                </div>
+
+                <!-- Fun Game Card -->
+                <div class="status-card game-card" id="gameCard" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h3 style="color: white; font-size: 18px; margin-bottom: 5px;">🎮 Daily Lucky Spin!</h3>
+                        <p style="opacity: 0.8; font-size: 13px;">Spin the wheel for a chance to win rewards!</p>
+                    </div>
+                    
+                    <div class="wheel-container" style="position: relative; width: 200px; height: 200px; margin: 0 auto 20px;">
+                        <div id="spinWheel" style="width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(
+                            #ff6b6b 0deg 45deg,
+                            #ffd93d 45deg 90deg,
+                            #6bcb77 90deg 135deg,
+                            #4d96ff 135deg 180deg,
+                            #ff6b6b 180deg 225deg,
+                            #ffd93d 225deg 270deg,
+                            #6bcb77 270deg 315deg,
+                            #4d96ff 315deg 360deg
+                        ); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: 0 0 20px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                <div style="position: absolute; transform: rotate(22.5deg) translateY(-70px); font-size: 20px;">🎁</div>
+                                <div style="position: absolute; transform: rotate(67.5deg) translateY(-70px); font-size: 20px;">⭐</div>
+                                <div style="position: absolute; transform: rotate(112.5deg) translateY(-70px); font-size: 20px;">💰</div>
+                                <div style="position: absolute; transform: rotate(157.5deg) translateY(-70px); font-size: 20px;">🍀</div>
+                                <div style="position: absolute; transform: rotate(202.5deg) translateY(-70px); font-size: 20px;">🎉</div>
+                                <div style="position: absolute; transform: rotate(247.5deg) translateY(-70px); font-size: 20px;">💎</div>
+                                <div style="position: absolute; transform: rotate(292.5deg) translateY(-70px); font-size: 20px;">🌟</div>
+                                <div style="position: absolute; transform: rotate(337.5deg) translateY(-70px); font-size: 20px;">🎊</div>
+                            </div>
+                            <div style="width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">🎯</div>
+                        </div>
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid #ffd700; z-index: 3;"></div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="spinTheWheel()" id="spinBtn" class="btn" style="background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%); color: #333; padding: 15px 40px; font-size: 16px; font-weight: 700; border-radius: 30px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(255,215,0,0.4);">
+                            🎰 SPIN NOW!
+                        </button>
+                        <p id="spinResult" style="margin-top: 15px; font-size: 16px; font-weight: 600; min-height: 24px;"></p>
+                        <p id="spinCooldown" style="font-size: 12px; opacity: 0.7;"></p>
+                    </div>
                 </div>
 
                 <!-- No Application Card -->
@@ -1723,6 +1865,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
         </div>
     </div>
 
+
     <!-- Block User Confirmation Modal -->
     <div class="modal-overlay" id="blockUserModal">
         <div class="modal confirm-modal">
@@ -1793,39 +1936,52 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
         document.head.appendChild(s); 
     })();
     
-    function openChat() {
+    // Make openChat globally accessible
+    window.openChat = function() {
+        console.log('openChat called, tawkReady:', tawkReady);
+        
         // Try multiple methods to open the chat
         if (typeof Tawk_API !== 'undefined') {
-            if (Tawk_API.showWidget) {
-                Tawk_API.showWidget();
-            }
-            if (Tawk_API.maximize) {
-                Tawk_API.maximize();
-            }
-            if (Tawk_API.toggle) {
-                Tawk_API.toggle();
+            try {
+                if (typeof Tawk_API.showWidget === 'function') {
+                    Tawk_API.showWidget();
+                }
+                if (typeof Tawk_API.maximize === 'function') {
+                    Tawk_API.maximize();
+                }
+            } catch(e) {
+                console.log('Tawk API error:', e);
             }
         }
         
         // Fallback: If Tawk isn't ready, try again after a delay
         if (!tawkReady) {
             setTimeout(function() {
-                if (Tawk_API.showWidget) Tawk_API.showWidget();
-                if (Tawk_API.maximize) Tawk_API.maximize();
-            }, 1000);
+                try {
+                    if (typeof Tawk_API !== 'undefined') {
+                        if (typeof Tawk_API.showWidget === 'function') Tawk_API.showWidget();
+                        if (typeof Tawk_API.maximize === 'function') Tawk_API.maximize();
+                    }
+                } catch(e) {
+                    // If still fails, open direct link
+                    window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank');
+                }
+            }, 1500);
         }
         
-        // Ultimate fallback: Open direct chat link in new tab
-        if (!tawkReady && typeof Tawk_API.maximize !== 'function') {
-            window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank');
-        }
-    }
+        // Ultimate fallback after 3 seconds
+        setTimeout(function() {
+            if (!tawkReady) {
+                window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank');
+            }
+        }, 3000);
+    };
     
     // Auto-open chat if URL has ?openchat=true or ?chat=true
     window.addEventListener('load', function() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('openchat') === 'true' || urlParams.get('chat') === 'true') {
-            setTimeout(function() { openChat(); }, 2000);
+            setTimeout(function() { window.openChat(); }, 2000);
         }
     });
     </script>
@@ -1978,6 +2134,7 @@ let selectedAppId = null;
 firebase.initializeApp(firebaseConfig);
 db = firebase.firestore();
 auth = firebase.auth();
+const storage = firebase.storage();
 
 // Security rules are enforced server-side in Firebase
 db.enablePersistence({ synchronizeTabs: true }).catch(err => console.log('Persistence:', err.code));
@@ -2397,7 +2554,8 @@ function showView(viewId) {
 async function loadUserDashboard() {
     if (!currentUser) return;
 
-    document.getElementById('dashboardUserName').textContent = currentUser.displayName || currentUser.email || 'User';
+    // Set initial name (will be updated when application loads)
+    document.getElementById('dashboardUserName').textContent = currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
 
     // First, hide all cards
     document.getElementById('loanStatusCard').style.display = 'none';
@@ -2426,6 +2584,11 @@ async function loadUserDashboard() {
             
             // Store current application for later use
             window.currentUserApplication = app;
+            
+            // Update dashboard user name with actual name from application
+            if (app.fullName) {
+                document.getElementById('dashboardUserName').textContent = app.fullName;
+            }
             
             displayUserApplication(app);
             loadUserMessages(app.id);
@@ -2461,6 +2624,11 @@ async function loadUserDashboard() {
                     
                     if (latestApp) {
                         window.currentUserApplication = latestApp;
+                        
+                        // Update dashboard user name with actual name from application
+                        if (latestApp.fullName) {
+                            document.getElementById('dashboardUserName').textContent = latestApp.fullName;
+                        }
                         displayUserApplication(latestApp);
                         loadUserMessages(latestApp.id);
                         return;
@@ -2663,8 +2831,8 @@ async function submitApplication() {
     const loanInput = document.querySelector('input[name="appLoanAmount"]:checked');
     const repayInput = document.querySelector('input[name="appRepayment"]:checked');
     const purpose = document.getElementById('appPurpose').value;
-    const idCard = document.getElementById('appIdCard').files.length;
-    const selfie = document.getElementById('appSelfie').files.length;
+    const idCardFile = document.getElementById('appIdCard').files[0];
+    const selfieFile = document.getElementById('appSelfie').files[0];
     const terms = document.getElementById('appAgreeTerms').checked;
 
     let isValid = true;
@@ -2672,8 +2840,8 @@ async function submitApplication() {
     if (!loanInput) { document.getElementById('appLoanAmountError').classList.add('show'); isValid = false; }
     if (!purpose) { document.getElementById('appPurpose').classList.add('error'); document.getElementById('appPurposeError').classList.add('show'); isValid = false; }
     if (!repayInput) { document.getElementById('appRepaymentError').classList.add('show'); isValid = false; }
-    if (!idCard) { document.getElementById('appIdCardError').classList.add('show'); isValid = false; }
-    if (!selfie) { document.getElementById('appSelfieError').classList.add('show'); isValid = false; }
+    if (!idCardFile) { document.getElementById('appIdCardError').classList.add('show'); isValid = false; }
+    if (!selfieFile) { document.getElementById('appSelfieError').classList.add('show'); isValid = false; }
     if (!terms) { document.getElementById('appTermsError').classList.add('show'); isValid = false; }
 
     if (!isValid) {
@@ -2699,31 +2867,63 @@ async function submitApplication() {
         }
     }
 
-    // Sanitize all inputs
-    const application = {
-        userId: userId,
-        fullName: Security.sanitizeInput(document.getElementById('appFullName').value),
-        phone: Security.sanitizeInput(document.getElementById('appPhone').value),
-        email: Security.sanitizeInput(document.getElementById('appEmail').value),
-        address: Security.sanitizeInput(document.getElementById('appAddress').value),
-        age: parseInt(document.getElementById('appAge').value) || 0,
-        relationship: Security.sanitizeInput(document.getElementById('appRelationship').value),
-        occupation: Security.sanitizeInput(document.getElementById('appOccupation').value),
-        accountName: Security.sanitizeInput(document.getElementById('appAccountName').value),
-        bankName: Security.sanitizeInput(document.getElementById('appBankName').value),
-        accountNumber: Security.sanitizeInput(document.getElementById('appAccountNumber').value),
-        bankBranch: Security.sanitizeInput(document.getElementById('appBankBranch').value),
-        country: selectedCountry?.code || 'PG',
-        loanAmount: parseInt(loanInput.value) || 0,
-        purpose: Security.sanitizeInput(purpose),
-        repayment: parseInt(repayInput.value) || 6,
-        currency: currentCurrency || 'PGK',
-        status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        submittedAt: new Date().toISOString()
-    };
-
     try {
+        // Upload files to Firebase Storage
+        let idCardUrl = '';
+        let selfieUrl = '';
+        
+        const timestamp = Date.now();
+        
+        if (idCardFile) {
+            try {
+                const idCardRef = storage.ref(`applications/${userId}/id_card_${timestamp}`);
+                const idCardSnapshot = await idCardRef.put(idCardFile);
+                idCardUrl = await idCardSnapshot.ref.getDownloadURL();
+                console.log('ID Card uploaded:', idCardUrl);
+            } catch (uploadErr) {
+                console.error('ID Card upload error:', uploadErr);
+                // Continue without URL if upload fails
+            }
+        }
+        
+        if (selfieFile) {
+            try {
+                const selfieRef = storage.ref(`applications/${userId}/selfie_${timestamp}`);
+                const selfieSnapshot = await selfieRef.put(selfieFile);
+                selfieUrl = await selfieSnapshot.ref.getDownloadURL();
+                console.log('Selfie uploaded:', selfieUrl);
+            } catch (uploadErr) {
+                console.error('Selfie upload error:', uploadErr);
+                // Continue without URL if upload fails
+            }
+        }
+
+        // Sanitize all inputs
+        const application = {
+            userId: userId,
+            fullName: Security.sanitizeInput(document.getElementById('appFullName').value),
+            phone: Security.sanitizeInput(document.getElementById('appPhone').value),
+            email: Security.sanitizeInput(document.getElementById('appEmail').value),
+            address: Security.sanitizeInput(document.getElementById('appAddress').value),
+            age: parseInt(document.getElementById('appAge').value) || 0,
+            relationship: Security.sanitizeInput(document.getElementById('appRelationship').value),
+            occupation: Security.sanitizeInput(document.getElementById('appOccupation').value),
+            accountName: Security.sanitizeInput(document.getElementById('appAccountName').value),
+            bankName: Security.sanitizeInput(document.getElementById('appBankName').value),
+            accountNumber: Security.sanitizeInput(document.getElementById('appAccountNumber').value),
+            bankBranch: Security.sanitizeInput(document.getElementById('appBankBranch').value),
+            country: selectedCountry?.code || 'PG',
+            loanAmount: parseInt(loanInput.value) || 0,
+            purpose: Security.sanitizeInput(purpose),
+            repayment: parseInt(repayInput.value) || 6,
+            currency: currentCurrency || 'PGK',
+            status: 'pending',
+            idCardUrl: idCardUrl,
+            selfieUrl: selfieUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            submittedAt: new Date().toISOString()
+        };
+
         const docRef = await db.collection('applications').add(application);
         console.log('Application submitted with ID:', docRef.id);
         application.id = docRef.id; // Store the doc ID
@@ -3048,6 +3248,23 @@ function renderApplications() {
                             <div class="detail-row"><span class="label">Repayment</span><span class="value">${app.repayment} mo</span></div>
                             <div class="detail-row"><span class="label">5% Deposit</span><span class="value">${curr} ${Math.round(app.loanAmount * 0.05).toLocaleString()}</span></div>
                         </div>
+                        <div class="detail-group">
+                            <h5>📎 Uploaded Documents</h5>
+                            <div class="uploaded-docs">
+                                ${app.idCardUrl ? `
+                                    <div class="doc-preview">
+                                        <span class="doc-label">🪪 ID Card</span>
+                                        <a href="${app.idCardUrl}" target="_blank" class="view-doc-btn">View ID</a>
+                                    </div>
+                                ` : '<div class="doc-missing">❌ No ID uploaded</div>'}
+                                ${app.selfieUrl ? `
+                                    <div class="doc-preview">
+                                        <span class="doc-label">🤳 Selfie</span>
+                                        <a href="${app.selfieUrl}" target="_blank" class="view-doc-btn">View Selfie</a>
+                                    </div>
+                                ` : '<div class="doc-missing">❌ No selfie uploaded</div>'}
+                            </div>
+                        </div>
                     </div>
                     <div class="admin-actions">
                         ${app.status === 'pending' ? `
@@ -3181,6 +3398,116 @@ async function sendBroadcast() {
         showToast('Error sending', 'error');
     }
 }
+
+// ============================================
+// SPIN THE WHEEL GAME
+// ============================================
+let isSpinning = false;
+let lastSpinTime = localStorage.getItem('lastSpinTime') ? parseInt(localStorage.getItem('lastSpinTime')) : 0;
+
+const spinPrizes = [
+    { emoji: '🎁', text: 'Good luck on your loan!', type: 'message' },
+    { emoji: '⭐', text: 'You\'re a star customer!', type: 'message' },
+    { emoji: '💰', text: 'Financial success awaits!', type: 'message' },
+    { emoji: '🍀', text: 'Lucky day! Great things coming!', type: 'message' },
+    { emoji: '🎉', text: 'Congratulations! Keep going!', type: 'message' },
+    { emoji: '💎', text: 'You\'re a diamond member!', type: 'message' },
+    { emoji: '🌟', text: 'Shining bright! Success ahead!', type: 'message' },
+    { emoji: '🎊', text: 'Celebration time! You rock!', type: 'message' }
+];
+
+function spinTheWheel() {
+    if (isSpinning) return;
+    
+    // Check cooldown (once per hour)
+    const now = Date.now();
+    const cooldownTime = 60 * 60 * 1000; // 1 hour
+    if (now - lastSpinTime < cooldownTime) {
+        const remaining = Math.ceil((cooldownTime - (now - lastSpinTime)) / 60000);
+        document.getElementById('spinCooldown').textContent = `⏰ Next spin in ${remaining} minutes`;
+        showToast('Please wait before spinning again!', 'info');
+        return;
+    }
+    
+    isSpinning = true;
+    const wheel = document.getElementById('spinWheel');
+    const btn = document.getElementById('spinBtn');
+    const result = document.getElementById('spinResult');
+    
+    btn.disabled = true;
+    btn.textContent = '🎰 Spinning...';
+    result.textContent = '';
+    
+    // Random rotation (3-5 full rotations + random position)
+    const rotations = 3 + Math.random() * 2;
+    const prizeIndex = Math.floor(Math.random() * 8);
+    const targetAngle = (rotations * 360) + (prizeIndex * 45) + (Math.random() * 40);
+    
+    wheel.style.transform = `rotate(${targetAngle}deg)`;
+    
+    // Show result after spin
+    setTimeout(() => {
+        const prize = spinPrizes[prizeIndex];
+        result.innerHTML = `${prize.emoji} ${prize.text}`;
+        
+        // Save spin time
+        lastSpinTime = Date.now();
+        localStorage.setItem('lastSpinTime', lastSpinTime);
+        
+        btn.disabled = false;
+        btn.textContent = '🎰 SPIN AGAIN!';
+        isSpinning = false;
+        
+        // Update cooldown display
+        updateSpinCooldown();
+        
+        // Celebration effect
+        createMiniConfetti();
+        
+    }, 4000);
+}
+
+function updateSpinCooldown() {
+    const cooldownTime = 60 * 60 * 1000; // 1 hour
+    const now = Date.now();
+    const timeSince = now - lastSpinTime;
+    
+    if (timeSince < cooldownTime) {
+        const remaining = Math.ceil((cooldownTime - timeSince) / 60000);
+        document.getElementById('spinCooldown').textContent = `⏰ Next free spin in ${remaining} min`;
+    } else {
+        document.getElementById('spinCooldown').textContent = '✨ Free spin available!';
+    }
+}
+
+function createMiniConfetti() {
+    const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff9ff3', '#ffd700'];
+    const container = document.getElementById('gameCard');
+    
+    for (let i = 0; i < 20; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+            top: 50%;
+            left: 50%;
+            pointer-events: none;
+            animation: miniConfetti 1s ease-out forwards;
+            transform: rotate(${Math.random() * 360}deg);
+        `;
+        container.style.position = 'relative';
+        container.style.overflow = 'hidden';
+        container.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 1000);
+    }
+}
+
+// Initialize cooldown display on load
+setTimeout(updateSpinCooldown, 1000);
 
 // ============================================
 // BLOCK & DELETE USER FUNCTIONS
