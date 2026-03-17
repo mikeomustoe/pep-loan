@@ -4166,4 +4166,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear errors on input
     document.querySelectorAll('input, select, textarea').forEach(el => {
-        el.addEv
+        el.addEventListener('input', () => {
+            el.classList.remove('error');
+            const errorEl = document.getElementById(el.id + 'Error');
+            if (errorEl) errorEl.classList.remove('show');
+        });
+    });
+
+    // Initialize country dropdowns
+    populateCountryDropdowns();
+    
+    // Set default country
+    setCountry('PG');
+    
+    // Update loan options
+    updateLoanOptions();
+    
+    console.log('✅ PEP Loans initialized successfully');
+});
+
+</script>
+</body>
+</html>
