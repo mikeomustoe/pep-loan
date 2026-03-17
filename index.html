@@ -2169,40 +2169,112 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     <!-- Testimonial Script -->
     <script>
     (function() {
-        // Testimonial data - names, countries, flags, messages
+        // Testimonial data - names, countries, flags, messages (EXPANDED - 100+ names, 50+ messages)
         const testimonialData = {
             countries: [
-                { name: 'Papua New Guinea', flag: '🇵🇬', currency: 'PGK', amounts: [25000, 35000, 50000, 75000] },
-                { name: 'Fiji', flag: '🇫🇯', currency: 'FJD', amounts: [11000, 16500, 22000, 33000] },
-                { name: 'Philippines', flag: '🇵🇭', currency: 'PHP', amounts: [50000, 75000, 100000, 150000] },
-                { name: 'Solomon Islands', flag: '🇸🇧', currency: 'SBD', amounts: [40000, 60000, 80000, 120000] },
-                { name: 'Vanuatu', flag: '🇻🇺', currency: 'VUV', amounts: [1200000, 1800000, 2400000, 3600000] },
-                { name: 'Australia', flag: '🇦🇺', currency: 'AUD', amounts: [7500, 11000, 15000, 22500] },
-                { name: 'New Zealand', flag: '🇳🇿', currency: 'NZD', amounts: [8000, 12000, 16000, 24000] }
+                { name: 'Papua New Guinea', flag: '🇵🇬', currency: 'PGK', amounts: [25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 65000, 70000, 75000] },
+                { name: 'Fiji', flag: '🇫🇯', currency: 'FJD', amounts: [11000, 13000, 16500, 19000, 22000, 27000, 33000] },
+                { name: 'Philippines', flag: '🇵🇭', currency: 'PHP', amounts: [50000, 65000, 75000, 85000, 100000, 125000, 150000] },
+                { name: 'Solomon Islands', flag: '🇸🇧', currency: 'SBD', amounts: [40000, 50000, 60000, 70000, 80000, 100000, 120000] },
+                { name: 'Vanuatu', flag: '🇻🇺', currency: 'VUV', amounts: [1200000, 1500000, 1800000, 2100000, 2400000, 3000000, 3600000] },
+                { name: 'Australia', flag: '🇦🇺', currency: 'AUD', amounts: [7500, 9000, 11000, 13000, 15000, 18000, 22500] },
+                { name: 'New Zealand', flag: '🇳🇿', currency: 'NZD', amounts: [8000, 10000, 12000, 14000, 16000, 20000, 24000] },
+                { name: 'Tonga', flag: '🇹🇴', currency: 'TOP', amounts: [11500, 15000, 18000, 23000, 28000, 34500] },
+                { name: 'Samoa', flag: '🇼🇸', currency: 'WST', amounts: [13500, 18000, 22000, 27000, 32000, 40500] },
+                { name: 'Indonesia', flag: '🇮🇩', currency: 'IDR', amounts: [75000000, 100000000, 125000000, 150000000, 175000000, 225000000] },
+                { name: 'Malaysia', flag: '🇲🇾', currency: 'MYR', amounts: [20000, 28000, 35000, 40000, 50000, 60000] }
             ],
-            maleNames: ['James', 'John', 'Michael', 'David', 'Robert', 'Peter', 'William', 'Thomas', 'Daniel', 'Paul', 'Mark', 'Steven', 'Andrew', 'Joseph', 'Charles', 'Kevin', 'Brian', 'George', 'Edward', 'Ronald', 'Timothy', 'Jason', 'Jeffrey', 'Ryan', 'Jacob', 'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel', 'Raymond', 'Gregory', 'Frank', 'Alexander', 'Patrick', 'Jack', 'Dennis', 'Jerry', 'Tyler', 'Aaron', 'Jose', 'Adam', 'Nathan', 'Henry'],
-            femaleNames: ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Barbara', 'Elizabeth', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Lisa', 'Nancy', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Kimberly', 'Emily', 'Donna', 'Michelle', 'Dorothy', 'Carol', 'Amanda', 'Melissa', 'Deborah', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia', 'Kathleen', 'Amy', 'Angela', 'Shirley', 'Anna', 'Brenda', 'Pamela', 'Emma', 'Nicole', 'Helen', 'Samantha', 'Katherine', 'Christine', 'Debra', 'Rachel', 'Carolyn', 'Janet', 'Catherine', 'Maria', 'Heather'],
+            maleNames: [
+                'James', 'John', 'Michael', 'David', 'Robert', 'Peter', 'William', 'Thomas', 'Daniel', 'Paul',
+                'Mark', 'Steven', 'Andrew', 'Joseph', 'Charles', 'Kevin', 'Brian', 'George', 'Edward', 'Ronald',
+                'Timothy', 'Jason', 'Jeffrey', 'Ryan', 'Jacob', 'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen',
+                'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel', 'Raymond', 'Gregory', 'Frank', 'Alexander',
+                'Patrick', 'Jack', 'Dennis', 'Jerry', 'Tyler', 'Aaron', 'Jose', 'Adam', 'Nathan', 'Henry',
+                'Douglas', 'Zachary', 'Peter', 'Kyle', 'Noah', 'Ethan', 'Jeremy', 'Walter', 'Christian', 'Keith',
+                'Roger', 'Terry', 'Austin', 'Sean', 'Gerald', 'Carl', 'Harold', 'Dylan', 'Arthur', 'Lawrence',
+                'Jordan', 'Jesse', 'Bryan', 'Billy', 'Bruce', 'Gabriel', 'Joe', 'Logan', 'Albert', 'Willie',
+                'Alan', 'Eugene', 'Russell', 'Vincent', 'Philip', 'Bobby', 'Johnny', 'Bradley', 'Roy', 'Ralph',
+                'Eugene', 'Randy', 'Howard', 'Carlos', 'Louis', 'Harry', 'Wayne', 'Phillip', 'Martin', 'Craig'
+            ],
+            femaleNames: [
+                'Mary', 'Patricia', 'Jennifer', 'Linda', 'Barbara', 'Elizabeth', 'Susan', 'Jessica', 'Sarah', 'Karen',
+                'Lisa', 'Nancy', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Kimberly', 'Emily', 'Donna', 'Michelle',
+                'Dorothy', 'Carol', 'Amanda', 'Melissa', 'Deborah', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia',
+                'Kathleen', 'Amy', 'Angela', 'Shirley', 'Anna', 'Brenda', 'Pamela', 'Emma', 'Nicole', 'Helen',
+                'Samantha', 'Katherine', 'Christine', 'Debra', 'Rachel', 'Carolyn', 'Janet', 'Catherine', 'Maria', 'Heather',
+                'Diane', 'Ruth', 'Julie', 'Olivia', 'Joyce', 'Virginia', 'Victoria', 'Kelly', 'Lauren', 'Christina',
+                'Joan', 'Evelyn', 'Judith', 'Megan', 'Andrea', 'Cheryl', 'Hannah', 'Jacqueline', 'Martha', 'Gloria',
+                'Teresa', 'Ann', 'Sara', 'Madison', 'Frances', 'Kathryn', 'Janice', 'Jean', 'Abigail', 'Alice',
+                'Judy', 'Sophia', 'Grace', 'Denise', 'Amber', 'Doris', 'Marilyn', 'Danielle', 'Beverly', 'Isabella',
+                'Theresa', 'Diana', 'Natalie', 'Brittany', 'Charlotte', 'Marie', 'Kayla', 'Alexis', 'Lori', 'Rose'
+            ],
             messages: [
+                // Excitement & Gratitude
                 "Just received my loan! PEP is amazing! 🎉",
                 "Thank you PEP! Money already in my account! 💰",
-                "Fast approval, fast payment! Highly recommend! ⭐",
                 "Got my business loan today! So grateful! 🙏",
                 "PEP came through for me! Loan received! ✅",
                 "Best loan service ever! Just got funded! 💵",
-                "Within 24hrs my loan was approved & sent! 🚀",
                 "Can't believe how fast this was! Thank you! 😊",
-                "Finally got the funds for my business! 🏪",
                 "PEP is legit! Just received my money! 💯",
                 "Wow! Loan disbursed same day! Amazing! ⚡",
                 "Thank you for believing in me PEP! 🌟",
-                "My shop expansion is now possible! Thanks! 🛒",
-                "Received my 2nd loan from PEP! Trusted! 🤝",
+                "PEP changed my life! Loan received today! ❤️",
+                "Tears of joy! Finally got my loan! 😭💕",
+                "God bless PEP! Money received! 🙌",
+                "You guys are the best! Loan in my account! 💖",
+                "So happy right now! Thank you PEP team! 🥳",
+                "Dreams coming true thanks to PEP! ✨",
+                
+                // Speed & Efficiency
+                "Fast approval, fast payment! Highly recommend! ⭐",
+                "Within 24hrs my loan was approved & sent! 🚀",
+                "From application to cash in 2 days! 📅",
                 "Quick process, real money! PEP delivers! 📦",
                 "Just paid fee & got loan instantly! 🎊",
-                "PEP changed my life! Loan received today! ❤️",
-                "From application to cash in 2 days! 📅",
+                "Applied yesterday, funded today! Wow! 😮",
+                "Fastest loan I've ever received! Thanks! ⏰",
+                "24 hours and done! Money received! 🏃",
+                "Super fast service! Highly impressed! 💨",
+                "No delays, no stress! Got my funds! 👏",
+                "Smooth process from start to finish! 🎯",
+                "Expected days, got it in hours! Amazing! ⌛",
+                
+                // Business Success
+                "Finally got the funds for my business! 🏪",
+                "My shop expansion is now possible! Thanks! 🛒",
+                "New equipment purchased! Thanks PEP! 🔧",
+                "Business growing thanks to this loan! 📈",
+                "Restocked my store! Sales booming now! 💹",
+                "Opened my 2nd branch! Thank you! 🏢",
+                "Finally bought that truck for delivery! 🚚",
+                "Market stall upgraded! Customers love it! 🎪",
+                "Farm equipment funded! Harvest incoming! 🌾",
+                "Restaurant expansion complete! Come visit! 🍽️",
+                
+                // Trust & Reliability
                 "5% fee worth it! Got my full amount! 💪",
-                "Legit service! Money now in my BSP account! 🏦"
+                "Legit service! Money now in my BSP account! 🏦",
+                "Received my 2nd loan from PEP! Trusted! 🤝",
+                "3rd time borrowing! Always reliable! 🔄",
+                "Referred my friends! They got funded too! 👥",
+                "My whole family uses PEP now! Trusted! 👨‍👩‍👧‍👦",
+                "Skeptical at first, now a believer! Real deal! 🎖️",
+                "100% legit! Don't hesitate, apply! ✔️",
+                "Verified and trusted! Just got my money! 🛡️",
+                "No scam here! Real money, real service! 💎",
+                
+                // Emotional Impact
+                "Kids going back to school! Thank you! 📚",
+                "Medical bills paid! Life saver! 🏥",
+                "House repairs done! Family safe now! 🏠",
+                "Wedding funded! Marrying my love! 💒",
+                "Emergency sorted! PEP saved us! 🆘",
+                "Christmas will be special this year! 🎄",
+                "Paid my debts! Fresh start! 🆓",
+                "Mother's surgery paid! Thank you! 💉",
+                "School fees sorted! Kids are happy! 🎒",
+                "Finally breathing! Loan received! 😌"
             ]
         };
         
