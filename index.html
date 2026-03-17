@@ -1397,18 +1397,38 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div class="deposit-amount" id="dashDeposit">PGK 0</div>
                         <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">(5% refundable deposit - returned with first disbursement)</p>
                         
+                        <!-- Contact Support Section -->
+                        <div style="background: white; border-radius: 12px; padding: 25px; margin: 20px 0; text-align: center;">
+                            <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
+                            <h5 style="color: var(--primary-dark); margin-bottom: 10px; font-size: 18px;">
+                                Contact Customer Support
+                            </h5>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                                Our support team will guide you through the payment process and provide payment details.
+                            </p>
+                            
+                            <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                                <p style="color: #856404; font-size: 13px; margin: 0;">
+                                    📋 Your Reference: <strong id="paymentReference">-</strong>
+                                </p>
+                                <p style="color: #856404; font-size: 12px; margin-top: 5px;">
+                                    Please provide this reference when contacting support
+                                </p>
+                            </div>
+                        </div>
+                        
                         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
                             <div class="chat-arrow-container">
-                                <span class="arrow-text">👇 Contact us to complete payment 👇</span>
+                                <span class="arrow-text">👇 Contact support to complete payment 👇</span>
                                 <div class="bouncing-arrow">↓</div>
                             </div>
                             
-                            <!-- Chat to Pay Button -->
+                            <!-- Chat Button -->
                             <button type="button" onclick="window.openChat ? window.openChat() : window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank')" class="btn btn-primary pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; cursor: pointer;">
-                                💬 Chat Now to Pay
+                                💬 Chat With Customer Support
                             </button>
                             
-                            <p style="text-align: center; font-size: 12px; color: var(--primary-dark); margin: 5px 0;">We accept: GCash • Maya • Bank Transfer • PayPal</p>
+                            <p style="text-align: center; font-size: 12px; color: var(--primary-dark); margin: 5px 0;">Available 24/7 • Fast Response • Secure Payment</p>
                         </div>
                     </div>
                 </div>
@@ -1449,7 +1469,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div class="profile-avatar" id="profileAvatar">U</div>
                         <div>
                             <h3 id="profileName">User Name</h3>
-                            <p id="profileEmail" style="color: var(--text-muted); font-size: 13px;">email@example.com</p>
+                            <p id="profileEmail" style="color: var(--text-muted); font-size: 13px;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f1a121e16133f1a071e120f131a511c1012">[email&#160;protected]</a></p>
                         </div>
                     </div>
                     <div class="profile-details">
@@ -1587,11 +1607,12 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
             </div>
 
             <div class="admin-stats">
-                <div class="stat-card"><div class="number" id="statTotal">0</div><div class="label">Total</div></div>
+                <div class="stat-card"><div class="number" id="statTotal">0</div><div class="label">Total Apps</div></div>
                 <div class="stat-card warning"><div class="number" id="statPending">0</div><div class="label">Pending</div></div>
                 <div class="stat-card success"><div class="number" id="statApproved">0</div><div class="label">Approved</div></div>
                 <div class="stat-card info"><div class="number" id="statDisbursedAdmin">0</div><div class="label">Disbursed</div></div>
                 <div class="stat-card" style="border-left: 4px solid #ff5722;"><div class="number" id="statBlocked" style="color: #ff5722;">0</div><div class="label">Blocked</div></div>
+                <div class="stat-card" style="border-left: 4px solid #9c27b0;"><div class="number" id="statRegisteredOnly" style="color: #9c27b0;">0</div><div class="label">No Application</div></div>
             </div>
 
             <div class="applications-card">
@@ -1606,6 +1627,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <button class="filter-tab" onclick="setFilter('approved', this)">Approved</button>
                         <button class="filter-tab" onclick="setFilter('disbursed', this)">Disbursed</button>
                         <button class="filter-tab" onclick="setFilter('blocked', this)">🚫 Blocked</button>
+                        <button class="filter-tab" onclick="setFilter('registered', this)" style="border-color: #9c27b0; color: #9c27b0;">👤 No App</button>
                     </div>
                 </div>
                 <div class="application-list" id="applicationList">
@@ -1917,7 +1939,7 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     </div>
 
     <!-- Tawk.to -->
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     var Tawk_API = Tawk_API || {};
     var Tawk_LoadStart = new Date();
     var tawkReady = false;
@@ -2370,13 +2392,17 @@ async function handleRegister() {
             phone: phone,
             email: email,
             country: selectedCountry?.code || 'PG',
+            hasApplied: false, // Track if user has submitted an application
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         await result.user.updateProfile({ displayName: name });
         Security.logSecurityEvent('USER_REGISTERED', { email });
-        showToast('Account created!', 'success');
+        showToast('Account created! Let\'s get you a loan!', 'success');
+        
+        // Mark as new signup to redirect to application form
+        window.isNewSignup = true;
     } catch (error) {
         showToast(error.message, 'error');
     }
@@ -2428,8 +2454,23 @@ function checkUserRole(user) {
         loadAdminDashboard();
     } else {
         isAdmin = false;
-        showView('userDashboard');
-        loadUserDashboard();
+        
+        // Check if this is a new signup - redirect to application form
+        if (window.isNewSignup) {
+            window.isNewSignup = false; // Reset the flag
+            showView('applicationForm');
+            goToFormStep(1);
+            updatePhonePrefix();
+            
+            // Pre-fill form with user's registration info
+            document.getElementById('appFullName').value = user.displayName || '';
+            document.getElementById('appEmail').value = user.email || '';
+            
+            showToast('Welcome! Complete your loan application below.', 'success');
+        } else {
+            showView('userDashboard');
+            loadUserDashboard();
+        }
     }
     updateNavigation();
     
@@ -2680,6 +2721,9 @@ function displayUserApplication(app) {
     if (status === 'approved' || status === 'pending') {
         document.getElementById('depositAction').style.display = 'block';
         document.getElementById('dashDeposit').textContent = currency + ' ' + Math.round(loanAmount * 0.05).toLocaleString();
+        
+        // Update payment reference
+        updatePaymentReference(app.id);
     } else {
         document.getElementById('depositAction').style.display = 'none';
     }
@@ -2921,14 +2965,61 @@ async function submitApplication() {
             idCardUrl: idCardUrl,
             selfieUrl: selfieUrl,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            submittedAt: new Date().toISOString()
+            submittedAt: new Date().toISOString(),
+            // Add extra tracking fields for debugging
+            userAgent: navigator.userAgent || 'unknown',
+            submittedFrom: window.location.hostname || 'unknown'
         };
 
+        console.log('Submitting application:', JSON.stringify(application, null, 2));
+        
+        // Save to localStorage as backup (in case Firebase fails silently)
+        try {
+            const backupKey = 'pep_pending_app_' + Date.now();
+            localStorage.setItem(backupKey, JSON.stringify({
+                ...application,
+                createdAt: new Date().toISOString(),
+                backupTimestamp: Date.now()
+            }));
+            console.log('Application backed up to localStorage:', backupKey);
+        } catch (e) {
+            console.log('localStorage backup failed:', e);
+        }
+
         const docRef = await db.collection('applications').add(application);
-        console.log('Application submitted with ID:', docRef.id);
+        console.log('✅ Application submitted successfully with ID:', docRef.id);
+        
+        // Verify the application was saved
+        try {
+            const verifyDoc = await docRef.get();
+            if (verifyDoc.exists) {
+                console.log('✅ Application verified in database:', verifyDoc.id);
+            } else {
+                console.error('⚠️ Application verification failed - document not found');
+            }
+        } catch (verifyErr) {
+            console.error('⚠️ Application verification error:', verifyErr);
+        }
+        
         application.id = docRef.id; // Store the doc ID
+        
+        // Clear localStorage backup since Firebase succeeded
+        try {
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('pep_pending_app_'));
+            keys.forEach(k => localStorage.removeItem(k));
+        } catch (e) {}
+        
+        // Update user record to mark as applied (for admin tracking)
+        if (userId && !currentUser?.isGuest) {
+            db.collection('users').doc(userId).update({
+                hasApplied: true,
+                lastApplicationId: docRef.id,
+                lastApplicationDate: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {}); // Ignore errors, not critical
+        }
+        
         sendEmailNotification(application);
-        Security.logSecurityEvent('APPLICATION_SUBMITTED', { email: application.email });
+        Security.logSecurityEvent('APPLICATION_SUBMITTED', { email: application.email, appId: docRef.id });
         showToast('Application submitted successfully!', 'success');
         
         // Navigate to dashboard and start processing animation
@@ -2938,7 +3029,10 @@ async function submitApplication() {
             startProcessingAnimation(application);
         }, 500);
     } catch (err) {
-        console.error('Submit error details:', err.code, err.message);
+        console.error('❌ Submit error details:', err.code, err.message, err);
+        
+        // Log full error for debugging
+        console.error('Full error object:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
         
         // Show more specific error messages
         if (err.code === 'permission-denied') {
@@ -3148,16 +3242,77 @@ Parents Empowerment Program
 // ============================================
 // ADMIN DASHBOARD
 // ============================================
+let allRegisteredUsers = []; // Track registered users without applications
+
 async function loadAdminDashboard() {
+    console.log('Loading admin dashboard...');
+    
     try {
-        const snapshot = await db.collection('applications').orderBy('createdAt', 'desc').get();
+        // Try ordered query first
+        let snapshot;
+        try {
+            snapshot = await db.collection('applications').orderBy('createdAt', 'desc').get();
+            console.log('✅ Loaded applications with orderBy:', snapshot.size);
+        } catch (orderErr) {
+            // If orderBy fails (missing index), fall back to unordered query
+            console.warn('⚠️ OrderBy query failed, using fallback:', orderErr.message);
+            snapshot = await db.collection('applications').get();
+            console.log('✅ Loaded applications without orderBy:', snapshot.size);
+        }
+        
         allApplications = [];
-        snapshot.forEach(doc => allApplications.push({ id: doc.id, ...doc.data() }));
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            console.log('📋 Application found:', doc.id, data.fullName, data.email, data.status);
+            allApplications.push({ id: doc.id, ...data });
+        });
+        
+        // Sort manually if we used the fallback query
+        allApplications.sort((a, b) => {
+            const dateA = a.createdAt?.toDate?.() || new Date(a.submittedAt || 0);
+            const dateB = b.createdAt?.toDate?.() || new Date(b.submittedAt || 0);
+            return dateB - dateA; // Descending order
+        });
+        
+        console.log('📊 Total applications loaded:', allApplications.length);
+        
+        // Fetch all registered users to find those without applications
+        try {
+            let usersSnapshot;
+            try {
+                usersSnapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+            } catch (e) {
+                usersSnapshot = await db.collection('users').get();
+            }
+            
+            const applicationUserIds = new Set(allApplications.map(app => app.userId));
+            
+            allRegisteredUsers = [];
+            usersSnapshot.forEach(doc => {
+                const userData = { id: doc.id, ...doc.data() };
+                // Check if this user has NOT submitted any application
+                if (!applicationUserIds.has(doc.id)) {
+                    allRegisteredUsers.push(userData);
+                }
+            });
+            
+            console.log('👤 Registered users without applications:', allRegisteredUsers.length);
+        } catch (userErr) {
+            console.log('Could not load users:', userErr);
+            allRegisteredUsers = [];
+        }
+        
         updateAdminStats();
         renderApplications();
     } catch (err) {
-        console.log('Admin error:', err);
-        document.getElementById('applicationList').innerHTML = '<div class="no-messages">Error loading</div>';
+        console.error('❌ Admin dashboard error:', err);
+        document.getElementById('applicationList').innerHTML = `
+            <div class="no-messages" style="text-align: center; padding: 30px;">
+                <p style="color: #dc3545; font-weight: 600;">Error loading applications</p>
+                <p style="font-size: 13px; color: #666; margin-top: 10px;">${err.message || 'Unknown error'}</p>
+                <button onclick="loadAdminDashboard()" class="btn btn-primary" style="margin-top: 15px;">🔄 Retry</button>
+            </div>
+        `;
     }
 }
 
@@ -3167,6 +3322,7 @@ function updateAdminStats() {
     document.getElementById('statApproved').textContent = allApplications.filter(a => a.status === 'approved').length;
     document.getElementById('statDisbursedAdmin').textContent = allApplications.filter(a => a.status === 'disbursed').length;
     document.getElementById('statBlocked').textContent = allApplications.filter(a => a.blocked).length;
+    document.getElementById('statRegisteredOnly').textContent = allRegisteredUsers.length;
 }
 
 function setFilter(filter, btn) {
@@ -3182,7 +3338,74 @@ function filterApplications() {
 
 function renderApplications() {
     const searchTerm = Security.sanitizeInput(document.getElementById('searchInput').value).toLowerCase();
+    const container = document.getElementById('applicationList');
     
+    // Handle "registered" filter - show users without applications
+    if (currentFilter === 'registered') {
+        const filteredUsers = allRegisteredUsers.filter(user => {
+            const matchesSearch = !searchTerm || 
+                (user.name || '').toLowerCase().includes(searchTerm) || 
+                (user.email || '').toLowerCase().includes(searchTerm) ||
+                (user.phone || '').includes(searchTerm);
+            return matchesSearch;
+        });
+        
+        if (filteredUsers.length === 0) {
+            container.innerHTML = '<div class="no-messages">No registered users without applications</div>';
+            return;
+        }
+        
+        container.innerHTML = filteredUsers.map(user => {
+            const initial = (user.name || user.email || 'U').charAt(0).toUpperCase();
+            const date = user.createdAt?.toDate ? user.createdAt.toDate() : new Date();
+            const lastLogin = user.lastLogin?.toDate ? user.lastLogin.toDate() : null;
+            const countryInfo = countries.find(c => c.code === user.country) || { name: user.country || 'Unknown' };
+            
+            return `
+                <div class="application-item" style="border-left: 4px solid #9c27b0;" id="user_${user.id}" onclick="toggleUser('${user.id}')">
+                    <div class="app-summary">
+                        <div class="app-info">
+                            <div class="app-avatar" style="background: #9c27b0;">${initial}</div>
+                            <div>
+                                <div class="app-name">
+                                    ${Security.sanitizeInput(user.name || 'Unknown')}
+                                    <span style="background: #9c27b0; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px;">NO APPLICATION</span>
+                                </div>
+                                <div class="app-meta">${Security.sanitizeInput(user.email || '-')} • ${countryInfo.name} • Registered: ${date.toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="color: #9c27b0; font-weight: 600;">Not Applied</span>
+                        </div>
+                    </div>
+                    <div class="app-details" id="userDetails_${user.id}" style="display: none;">
+                        <div class="details-grid">
+                            <div class="detail-group">
+                                <h5>User Information</h5>
+                                <div class="detail-row"><span class="label">Name</span><span class="value">${Security.sanitizeInput(user.name || '-')}</span></div>
+                                <div class="detail-row"><span class="label">Email</span><span class="value">${Security.sanitizeInput(user.email || '-')}</span></div>
+                                <div class="detail-row"><span class="label">Phone</span><span class="value">${Security.sanitizeInput(user.phone || '-')}</span></div>
+                                <div class="detail-row"><span class="label">Country</span><span class="value">${countryInfo.name}</span></div>
+                            </div>
+                            <div class="detail-group">
+                                <h5>Activity</h5>
+                                <div class="detail-row"><span class="label">Registered</span><span class="value">${date.toLocaleString()}</span></div>
+                                <div class="detail-row"><span class="label">Last Login</span><span class="value">${lastLogin ? lastLogin.toLocaleString() : 'Never'}</span></div>
+                                <div class="detail-row"><span class="label">User ID</span><span class="value" style="font-size: 10px;">${user.id}</span></div>
+                            </div>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="admin-btn message" onclick="event.stopPropagation(); sendReminderToUser('${user.id}', '${Security.sanitizeInput(user.name || 'User')}', '${Security.sanitizeInput(user.email || '')}')">📧 Send Reminder</button>
+                            <button class="admin-btn delete" onclick="event.stopPropagation(); deleteRegisteredUser('${user.id}', '${Security.sanitizeInput(user.name || 'User')}')">🗑️ Delete User</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        return;
+    }
+    
+    // Normal application filter
     const filtered = allApplications.filter(app => {
         const matchesFilter = currentFilter === 'all' || 
             app.status === currentFilter || 
@@ -3193,8 +3416,6 @@ function renderApplications() {
             app.phone.includes(searchTerm);
         return matchesFilter && matchesSearch;
     });
-
-    const container = document.getElementById('applicationList');
 
     if (filtered.length === 0) {
         container.innerHTML = '<div class="no-messages">No applications found</div>';
@@ -3290,6 +3511,76 @@ function renderApplications() {
 
 function toggleApplication(appId) {
     document.getElementById('app_' + appId).classList.toggle('expanded');
+}
+
+// Toggle registered user details
+function toggleUser(userId) {
+    const detailsEl = document.getElementById('userDetails_' + userId);
+    if (detailsEl) {
+        detailsEl.style.display = detailsEl.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Send reminder email to registered user who hasn't applied
+function sendReminderToUser(userId, name, email) {
+    if (!email) {
+        showToast('No email address for this user', 'error');
+        return;
+    }
+    
+    if (typeof emailjs === 'undefined') {
+        showToast('Email service not available', 'error');
+        return;
+    }
+    
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: email,
+        from_name: 'PEP Loans',
+        subject: '🎁 Complete Your Loan Application - PEP Loans',
+        message: `
+Dear ${name},
+
+We noticed you created an account with PEP Loans but haven't completed your loan application yet!
+
+🎉 DON'T MISS OUT! 🎉
+
+We're offering loans up to PGK 75,000 with:
+✓ Fast approval (24-48 hours)
+✓ Flexible repayment (3-12 months)
+✓ Simple 3-step application
+
+COMPLETE YOUR APPLICATION NOW:
+👉 https://peploan.co.uk
+
+Need help? Just reply to this email or chat with us on the website!
+
+Best regards,
+PEP Loans Team
+Parents Empowerment Program
+        `
+    }).then(() => {
+        showToast('Reminder sent to ' + name, 'success');
+        // Log the reminder
+        db.collection('users').doc(userId).update({
+            lastReminderSent: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+    }).catch(e => {
+        console.log('Reminder email error:', e);
+        showToast('Error sending reminder', 'error');
+    });
+}
+
+// Delete a registered user who hasn't applied
+function deleteRegisteredUser(userId, name) {
+    if (confirm(`Are you sure you want to delete user "${name}"? This cannot be undone.`)) {
+        db.collection('users').doc(userId).delete().then(() => {
+            showToast('User deleted: ' + name, 'success');
+            loadAdminDashboard();
+        }).catch(err => {
+            console.error('Delete user error:', err);
+            showToast('Error deleting user', 'error');
+        });
+    }
 }
 
 async function updateStatus(appId, newStatus) {
@@ -3648,6 +3939,7 @@ async function confirmDeleteApplication() {
 // ============================================
 // UTILITIES
 // ============================================
+
 function showToast(message, type) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -3655,6 +3947,13 @@ function showToast(message, type) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+// Update payment reference when displaying application
+function updatePaymentReference(appId) {
+    const refEl = document.getElementById('paymentReference');
+    if (refEl && appId) {
+        refEl.textContent = 'PEP-' + appId.substring(0, 8).toUpperCase();
+    }
+}
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
 }
@@ -3867,15 +4166,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear errors on input
     document.querySelectorAll('input, select, textarea').forEach(el => {
-        el.addEventListener('input', () => {
-            el.classList.remove('error');
-            document.getElementById(el.id + 'Error')?.classList.remove('show');
-        });
-    });
-
-    updateLoanOptions();
-});
-
-</script>
-</body>
-</html>
+        el.addEv
