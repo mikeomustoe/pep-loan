@@ -1276,6 +1276,18 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <button class="cta-btn primary" onclick="showView('authView'); setTimeout(() => switchAuthTab('register'), 100);">Register & Apply →</button>
                         <button class="cta-btn secondary" onclick="showView('authView')">Already have account? Login</button>
                     </div>
+                    
+                    <!-- Social Links -->
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                        <a href="https://www.facebook.com/programpep" target="_blank" style="display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: #1877F2; color: white; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; transition: transform 0.2s;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Follow Us
+                        </a>
+                        <a href="https://m.me/838746395998915" target="_blank" style="display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: #0084FF; color: white; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; transition: transform 0.2s;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
+                            Message Us
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1401,10 +1413,10 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div style="background: white; border-radius: 12px; padding: 25px; margin: 20px 0; text-align: center;">
                             <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
                             <h5 style="color: var(--primary-dark); margin-bottom: 10px; font-size: 18px;">
-                                Contact Customer Support
+                                Contact Admin via Messenger
                             </h5>
                             <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                                Our support team will guide you through the payment process and provide payment details.
+                                Message us on Facebook Messenger to complete your payment and receive your funds.
                             </p>
                             
                             <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
@@ -1412,21 +1424,28 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                                     📋 Your Reference: <strong id="paymentReference">-</strong>
                                 </p>
                                 <p style="color: #856404; font-size: 12px; margin-top: 5px;">
-                                    Please provide this reference when contacting support
+                                    Please provide this reference when contacting admin
                                 </p>
                             </div>
                         </div>
                         
                         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
                             <div class="chat-arrow-container">
-                                <span class="arrow-text">👇 Contact support to complete payment 👇</span>
+                                <span class="arrow-text">👇 Message Admin to complete payment 👇</span>
                                 <div class="bouncing-arrow">↓</div>
                             </div>
                             
-                            <!-- Chat Button -->
-                            <button type="button" onclick="window.openChat ? window.openChat() : window.open('https://tawk.to/chat/69ad701d811e1a1c36cff0e5/default', '_blank')" class="btn btn-primary pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; cursor: pointer;">
-                                💬 Chat With Customer Support
-                            </button>
+                            <!-- Facebook Messenger Button -->
+                            <a href="https://m.me/838746395998915" target="_blank" class="btn pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; cursor: pointer; background: #0084FF; color: white; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
+                                Message Us on Messenger
+                            </a>
+                            
+                            <!-- Facebook Page Link -->
+                            <a href="https://www.facebook.com/programpep" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: #1877F2; color: white; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                Visit Our Facebook Page
+                            </a>
                             
                             <p style="text-align: center; font-size: 12px; color: var(--primary-dark); margin: 5px 0;">Available 24/7 • Fast Response • Secure Payment</p>
                         </div>
@@ -1592,8 +1611,15 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div style="font-size: 28px; font-weight: 700; color: var(--primary-dark);" id="congratsDeposit">PGK 2,500</div>
                         <p style="font-size: 13px; color: #856404; margin-top: 5px;">(5% processing fee - refundable)</p>
                     </div>
-                    <button onclick="closeCongratsModal()" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 18px;">
-                        Continue to Dashboard →
+                    
+                    <!-- Messenger CTA -->
+                    <a href="https://m.me/838746395998915" target="_blank" class="btn pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; background: #0084FF; color: white; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; margin-bottom: 12px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
+                        💬 Message Admin to Pay Now
+                    </a>
+                    
+                    <button onclick="closeCongratsModal()" class="btn" style="width: 100%; padding: 14px; font-size: 14px; background: #e0e0e0; color: var(--text-dark); border: none; border-radius: 10px;">
+                        View Dashboard First →
                     </button>
                 </div>
             </div>
@@ -1931,14 +1957,18 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
         </div>
     </div>
 
-    <!-- Floating Chat -->
-    <div class="floating-chat">
-        <button class="floating-chat-btn" onclick="openChat()">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </button>
-    </div>
+    <!-- Floating Messenger Button -->
+    <a href="https://m.me/838746395998915" target="_blank" class="floating-messenger" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #0084FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0, 132, 255, 0.4); z-index: 999; text-decoration: none; transition: transform 0.3s, box-shadow 0.3s;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
+    </a>
+    <style>
+        .floating-messenger:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 132, 255, 0.5);
+        }
+    </style>
 
-    <!-- Tawk.to -->
+    <!-- Toast Notification -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     var Tawk_API = Tawk_API || {};
     var Tawk_LoadStart = new Date();
