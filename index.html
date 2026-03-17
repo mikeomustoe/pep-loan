@@ -1167,10 +1167,11 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                 </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <a href="https://expo.dev/accounts/kurosoft/projects/pep-loans/builds/386c662b-e488-40c8-a6dc-33e91a3b02b0" 
-                   id="downloadAppBtn"
+                <a href="pep-loans.apk" 
+                   download="PEP-Loans.apk"
+                   onclick="trackAppDownload()"
                    style="background: #d4af26; color: #1a3a5c; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 14px; white-space: nowrap;">
-                    Download APK
+                    ⬇️ Install App
                 </a>
                 <button onclick="closeAppBanner()" style="background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px;">×</button>
             </div>
@@ -1196,15 +1197,22 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                     <span>✅</span><span style="font-size: 13px; color: #333;">Faster & smoother experience</span>
                 </div>
             </div>
-            <a href="https://expo.dev/accounts/kurosoft/projects/pep-loans/builds/386c662b-e488-40c8-a6dc-33e91a3b02b0" 
-               onclick="markAppPromptShown()"
+            <a href="pep-loans.apk" 
+               download="PEP-Loans.apk"
+               onclick="trackAppDownload(); markAppPromptShown();"
                style="display: block; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a87 100%); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 16px; margin-bottom: 15px;">
-                ⬇️ Download Now
+                ⬇️ Download Now (Free)
             </a>
+            <p style="font-size: 11px; color: #999; margin-bottom: 15px;">Size: ~25 MB • Android 6.0+</p>
             <button onclick="closeAppModal()" style="background: transparent; border: none; color: #999; font-size: 14px; cursor: pointer;">
                 Maybe Later
             </button>
         </div>
+    </div>
+
+    <!-- Download Progress Toast -->
+    <div id="downloadToast" style="display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #4CAF50; color: white; padding: 15px 25px; border-radius: 30px; font-weight: 600; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        ✅ Download started! Check your notifications.
     </div>
 
     <style>
@@ -1224,6 +1232,24 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
         return /Android/i.test(navigator.userAgent);
     }
     
+    function trackAppDownload() {
+        // Show download toast
+        const toast = document.getElementById('downloadToast');
+        if (toast) {
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Close modal and banner
+        closeAppModal();
+        closeAppBanner();
+        
+        // Track in analytics if available
+        console.log('App download initiated');
+    }
+    
     function showAppBanner() {
         const banner = document.getElementById('appDownloadBanner');
         if (banner && !sessionStorage.getItem('appBannerClosed')) {
@@ -1232,7 +1258,8 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     }
     
     function closeAppBanner() {
-        document.getElementById('appDownloadBanner').style.display = 'none';
+        const banner = document.getElementById('appDownloadBanner');
+        if (banner) banner.style.display = 'none';
         sessionStorage.setItem('appBannerClosed', 'true');
     }
     
@@ -1244,10 +1271,11 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
     }
     
     function closeAppModal() {
-        document.getElementById('appDownloadModal').style.display = 'none';
+        const modal = document.getElementById('appDownloadModal');
+        if (modal) modal.style.display = 'none';
         markAppPromptShown();
-        // Show banner instead
-        setTimeout(showAppBanner, 1000);
+        // Show banner instead after a delay
+        setTimeout(showAppBanner, 3000);
     }
     
     function markAppPromptShown() {
