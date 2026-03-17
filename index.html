@@ -30,6 +30,9 @@
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
+    <!-- PayPal SDK (Sandbox/Test Mode) -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AZHqP90DCTom_9T8ZLkZWj-9tOVIzslxOwcRwREVgKXevj_uhWr_wjnMWypeiYAUufhkym1C-BH8L_YO&currency=USD&intent=capture"></script>
+    
     <style>
 :root {
     --primary: #1a3a5c;
@@ -1574,45 +1577,53 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <div class="deposit-amount" id="dashDeposit">PGK 0</div>
                         <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">(5% refundable deposit - returned with first disbursement)</p>
                         
-                        <!-- Contact Support Section -->
+                        <!-- Payment Section -->
                         <div style="background: white; border-radius: 12px; padding: 25px; margin: 20px 0; text-align: center;">
-                            <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
-                            <h5 style="color: var(--primary-dark); margin-bottom: 10px; font-size: 18px;">
-                                Contact Admin via Messenger
+                            <div style="font-size: 40px; margin-bottom: 10px;">💳</div>
+                            <h5 style="color: var(--primary-dark); margin-bottom: 5px; font-size: 18px;">
+                                Secure Payment
                             </h5>
-                            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                                Message us on Facebook Messenger to complete your payment and receive your funds.
+                            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
+                                Pay securely with PayPal or Credit/Debit Card
                             </p>
                             
-                            <div style="background: #fff3cd; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                            <div style="background: #fff3cd; border-radius: 10px; padding: 12px; margin-bottom: 20px;">
                                 <p style="color: #856404; font-size: 13px; margin: 0;">
-                                    📋 Your Reference: <strong id="paymentReference">-</strong>
+                                    📋 Reference: <strong id="paymentReference">-</strong>
                                 </p>
-                                <p style="color: #856404; font-size: 12px; margin-top: 5px;">
-                                    Please provide this reference when contacting admin
-                                </p>
+                            </div>
+                            
+                            <!-- Payment Amount Display -->
+                            <div style="background: linear-gradient(135deg, #f0f8ff 0%, #e8f4fd 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid var(--primary);">
+                                <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 5px;">Amount to Pay (USD)</p>
+                                <div style="font-size: 32px; font-weight: 700; color: var(--primary-dark);" id="paypalAmountDisplay">$0.00</div>
+                                <p style="color: #666; font-size: 11px; margin-top: 5px;">Converted from <span id="originalAmountDisplay">PGK 0</span></p>
+                            </div>
+                            
+                            <!-- PayPal Button Container -->
+                            <div id="paypal-button-container" style="min-height: 150px;"></div>
+                            
+                            <!-- Payment Processing Indicator -->
+                            <div id="paymentProcessing" style="display: none; padding: 30px; text-align: center;">
+                                <div style="width: 50px; height: 50px; border: 4px solid #f0f0f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+                                <p style="color: var(--primary-dark); font-weight: 600;">Processing payment...</p>
+                            </div>
+                            
+                            <!-- Payment Success -->
+                            <div id="paymentSuccess" style="display: none; padding: 20px; background: #d4edda; border-radius: 12px;">
+                                <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+                                <h4 style="color: #155724; margin-bottom: 10px;">Payment Successful!</h4>
+                                <p style="color: #155724; font-size: 14px;">Your loan will be disbursed within 24 hours.</p>
                             </div>
                         </div>
                         
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                            <div class="chat-arrow-container">
-                                <span class="arrow-text">👇 Message Admin to complete payment 👇</span>
-                                <div class="bouncing-arrow">↓</div>
-                            </div>
-                            
-                            <!-- Facebook Messenger Button -->
-                            <a href="https://m.me/838746395998915" target="_blank" class="btn pulse-btn" style="width: 100%; padding: 18px; font-size: 18px; font-weight: 700; cursor: pointer; background: #0084FF; color: white; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
-                                Message Us on Messenger
+                        <!-- Alternative: Contact via Messenger -->
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 10px; text-align: center;">Having issues? Contact us directly:</p>
+                            <a href="https://m.me/838746395998915" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: #0084FF; color: white; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.13.26.35.27.57l.05 1.78c.04.57.61.94 1.13.71l1.98-.87c.17-.08.36-.1.55-.06.91.25 1.87.38 2.88.38 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm5.89 7.73l-2.88 4.57c-.46.73-1.41.92-2.09.42l-2.29-1.72a.57.57 0 00-.69 0l-3.09 2.34c-.41.31-.95-.17-.68-.6l2.88-4.57c.46-.73 1.41-.92 2.09-.42l2.29 1.72c.21.16.49.16.69 0l3.09-2.34c.41-.31.95.17.68.6z"/></svg>
+                                Chat on Messenger
                             </a>
-                            
-                            <!-- Facebook Page Link -->
-                            <a href="https://www.facebook.com/programpep" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: #1877F2; color: white; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                                Visit Our Facebook Page
-                            </a>
-                            
-                            <p style="text-align: center; font-size: 12px; color: var(--primary-dark); margin: 5px 0;">Available 24/7 • Fast Response • Secure Payment</p>
                         </div>
                     </div>
                 </div>
@@ -3321,10 +3332,14 @@ function displayUserApplication(app) {
     // Always show deposit action for pending and approved applications
     if (status === 'approved' || status === 'pending') {
         document.getElementById('depositAction').style.display = 'block';
-        document.getElementById('dashDeposit').textContent = currency + ' ' + Math.round(loanAmount * 0.05).toLocaleString();
+        const depositAmount = Math.round(loanAmount * 0.05);
+        document.getElementById('dashDeposit').textContent = currency + ' ' + depositAmount.toLocaleString();
         
         // Update payment reference
         updatePaymentReference(app.id);
+        
+        // Initialize PayPal payment
+        initializePayPal(app, depositAmount, currency);
     } else {
         document.getElementById('depositAction').style.display = 'none';
     }
@@ -4555,6 +4570,194 @@ function updatePaymentReference(appId) {
         refEl.textContent = 'PEP-' + appId.substring(0, 8).toUpperCase();
     }
 }
+
+// ============================================
+// PAYPAL PAYMENT INTEGRATION
+// ============================================
+// Currency conversion rates (approximate - PGK to USD)
+const CURRENCY_TO_USD = {
+    'PGK': 0.27,  // Papua New Guinea Kina
+    'FJD': 0.44,  // Fiji Dollar
+    'SBD': 0.12,  // Solomon Islands Dollar
+    'VUV': 0.0084, // Vanuatu Vatu
+    'PHP': 0.018, // Philippine Peso
+    'AUD': 0.65,  // Australian Dollar
+    'NZD': 0.60,  // New Zealand Dollar
+    'USD': 1.00,  // US Dollar
+    'TOP': 0.42,  // Tongan Pa'anga
+    'WST': 0.37,  // Samoan Tala
+    'IDR': 0.000063, // Indonesian Rupiah
+    'MYR': 0.22   // Malaysian Ringgit
+};
+
+let paypalButtonsRendered = false;
+
+function convertToUSD(amount, currency) {
+    const rate = CURRENCY_TO_USD[currency] || CURRENCY_TO_USD['PGK'];
+    return (amount * rate).toFixed(2);
+}
+
+function initializePayPal(app, depositAmount, currency) {
+    // Convert to USD for PayPal
+    const usdAmount = convertToUSD(depositAmount, currency);
+    
+    // Update display
+    const paypalDisplay = document.getElementById('paypalAmountDisplay');
+    const originalDisplay = document.getElementById('originalAmountDisplay');
+    
+    if (paypalDisplay) {
+        paypalDisplay.textContent = '$' + parseFloat(usdAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    if (originalDisplay) {
+        originalDisplay.textContent = currency + ' ' + depositAmount.toLocaleString();
+    }
+    
+    // Clear existing buttons
+    const container = document.getElementById('paypal-button-container');
+    if (container) {
+        container.innerHTML = '';
+    }
+    
+    // Check if PayPal SDK is loaded
+    if (typeof paypal === 'undefined') {
+        console.error('PayPal SDK not loaded');
+        if (container) {
+            container.innerHTML = '<p style="color: #dc3545; text-align: center;">Payment system loading... Please refresh the page.</p>';
+        }
+        return;
+    }
+    
+    // Render PayPal buttons
+    try {
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect',
+                label: 'paypal',
+                height: 45
+            },
+            
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        description: 'PEP Loans - 5% Processing Fee (Ref: PEP-' + app.id.substring(0, 8).toUpperCase() + ')',
+                        amount: {
+                            currency_code: 'USD',
+                            value: usdAmount
+                        }
+                    }]
+                });
+            },
+            
+            onApprove: function(data, actions) {
+                // Show processing
+                document.getElementById('paypal-button-container').style.display = 'none';
+                document.getElementById('paymentProcessing').style.display = 'block';
+                
+                return actions.order.capture().then(function(details) {
+                    // Payment successful
+                    console.log('Payment completed:', details);
+                    
+                    // Hide processing, show success
+                    document.getElementById('paymentProcessing').style.display = 'none';
+                    document.getElementById('paymentSuccess').style.display = 'block';
+                    
+                    // Update application status in Firebase
+                    updatePaymentStatus(app.id, details);
+                    
+                    // Show success toast
+                    showToast('🎉 Payment successful! Your loan will be disbursed within 24 hours.', 'success');
+                    
+                    // Send notification to admin
+                    notifyAdminOfPayment(app, details, usdAmount);
+                });
+            },
+            
+            onError: function(err) {
+                console.error('PayPal error:', err);
+                showToast('Payment failed. Please try again or contact support.', 'error');
+                
+                // Show buttons again
+                document.getElementById('paymentProcessing').style.display = 'none';
+                document.getElementById('paypal-button-container').style.display = 'block';
+            },
+            
+            onCancel: function(data) {
+                console.log('Payment cancelled:', data);
+                showToast('Payment cancelled. You can try again when ready.', 'warning');
+            }
+            
+        }).render('#paypal-button-container');
+        
+        paypalButtonsRendered = true;
+        
+    } catch (err) {
+        console.error('Error rendering PayPal buttons:', err);
+        if (container) {
+            container.innerHTML = '<p style="color: #dc3545; text-align: center;">Error loading payment. Please refresh the page.</p>';
+        }
+    }
+}
+
+async function updatePaymentStatus(appId, paymentDetails) {
+    try {
+        await db.collection('applications').doc(appId).update({
+            paymentStatus: 'paid',
+            paymentDate: firebase.firestore.FieldValue.serverTimestamp(),
+            paymentMethod: 'PayPal',
+            paymentId: paymentDetails.id,
+            payerEmail: paymentDetails.payer?.email_address || '',
+            payerName: paymentDetails.payer?.name?.given_name + ' ' + paymentDetails.payer?.name?.surname || '',
+            paymentAmount: paymentDetails.purchase_units?.[0]?.amount?.value || '',
+            paymentCurrency: 'USD'
+        });
+        
+        console.log('Payment status updated in Firebase');
+        
+        // Also add a message to the user
+        await db.collection('messages').add({
+            applicationId: appId,
+            userId: currentUser?.uid || '',
+            message: '✅ Payment of $' + paymentDetails.purchase_units?.[0]?.amount?.value + ' received successfully! Your loan will be disbursed within 24 hours. Thank you!',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            fromAdmin: true
+        });
+        
+    } catch (err) {
+        console.error('Error updating payment status:', err);
+    }
+}
+
+async function notifyAdminOfPayment(app, paymentDetails, usdAmount) {
+    try {
+        // Send email notification via EmailJS
+        if (typeof emailjs !== 'undefined') {
+            await emailjs.send('service_peploan', 'template_admin_notify', {
+                to_email: ADMIN_EMAIL,
+                subject: '💰 Payment Received - ' + app.fullName,
+                message: `
+                    Payment Received!
+                    
+                    Customer: ${app.fullName}
+                    Email: ${app.email}
+                    Phone: ${app.phone}
+                    
+                    Loan Amount: ${app.currency} ${app.loanAmount?.toLocaleString()}
+                    Fee Paid: $${usdAmount} USD
+                    
+                    PayPal Transaction ID: ${paymentDetails.id}
+                    Payer Email: ${paymentDetails.payer?.email_address}
+                    
+                    Please disburse the loan within 24 hours.
+                `
+            });
+        }
+    } catch (err) {
+        console.error('Error notifying admin:', err);
+    }
+}
+
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
 }
