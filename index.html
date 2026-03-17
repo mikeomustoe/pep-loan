@@ -1154,6 +1154,138 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 </style>
 </head>
 <body>
+    <!-- App Download Banner -->
+    <div id="appDownloadBanner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a87 100%); color: white; padding: 15px 20px; z-index: 9999; box-shadow: 0 -4px 20px rgba(0,0,0,0.3);">
+        <div style="max-width: 600px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 50px; height: 50px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 24px;">📱</span>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">Get PEP Loans App</div>
+                    <div style="font-size: 12px; opacity: 0.9;">Faster access & instant notifications</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="https://expo.dev/accounts/kurosoft/projects/pep-loans/builds/386c662b-e488-40c8-a6dc-33e91a3b02b0" 
+                   id="downloadAppBtn"
+                   style="background: #d4af26; color: #1a3a5c; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 14px; white-space: nowrap;">
+                    Download APK
+                </a>
+                <button onclick="closeAppBanner()" style="background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px;">×</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Download Modal (for first-time mobile visitors) -->
+    <div id="appDownloadModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 350px; text-align: center; animation: slideUp 0.3s ease;">
+            <div style="font-size: 60px; margin-bottom: 15px;">📲</div>
+            <h2 style="color: #1a3a5c; font-size: 22px; margin-bottom: 10px; font-family: 'Playfair Display', serif;">Get Our Mobile App!</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+                Download the PEP Loans app for a better experience with <strong>instant notifications</strong> when your loan is approved!
+            </p>
+            <div style="background: #f0f8ff; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
+                    <span>✅</span><span style="font-size: 13px; color: #333;">Instant loan status updates</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
+                    <span>✅</span><span style="font-size: 13px; color: #333;">Chat with admin in-app</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>✅</span><span style="font-size: 13px; color: #333;">Faster & smoother experience</span>
+                </div>
+            </div>
+            <a href="https://expo.dev/accounts/kurosoft/projects/pep-loans/builds/386c662b-e488-40c8-a6dc-33e91a3b02b0" 
+               onclick="markAppPromptShown()"
+               style="display: block; background: linear-gradient(135deg, #1a3a5c 0%, #2d5a87 100%); color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 16px; margin-bottom: 15px;">
+                ⬇️ Download Now
+            </a>
+            <button onclick="closeAppModal()" style="background: transparent; border: none; color: #999; font-size: 14px; cursor: pointer;">
+                Maybe Later
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+
+    <script>
+    // App Download Functions
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    function isAndroid() {
+        return /Android/i.test(navigator.userAgent);
+    }
+    
+    function showAppBanner() {
+        const banner = document.getElementById('appDownloadBanner');
+        if (banner && !sessionStorage.getItem('appBannerClosed')) {
+            banner.style.display = 'block';
+        }
+    }
+    
+    function closeAppBanner() {
+        document.getElementById('appDownloadBanner').style.display = 'none';
+        sessionStorage.setItem('appBannerClosed', 'true');
+    }
+    
+    function showAppModal() {
+        const modal = document.getElementById('appDownloadModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+    
+    function closeAppModal() {
+        document.getElementById('appDownloadModal').style.display = 'none';
+        markAppPromptShown();
+        // Show banner instead
+        setTimeout(showAppBanner, 1000);
+    }
+    
+    function markAppPromptShown() {
+        localStorage.setItem('appPromptShown', 'true');
+        localStorage.setItem('appPromptDate', Date.now().toString());
+    }
+    
+    function shouldShowAppPrompt() {
+        // Only show on Android devices
+        if (!isAndroid()) return false;
+        
+        const shown = localStorage.getItem('appPromptShown');
+        const shownDate = localStorage.getItem('appPromptDate');
+        
+        // Never shown before
+        if (!shown) return true;
+        
+        // Show again after 7 days
+        if (shownDate) {
+            const daysSince = (Date.now() - parseInt(shownDate)) / (1000 * 60 * 60 * 24);
+            if (daysSince > 7) return true;
+        }
+        
+        return false;
+    }
+    
+    // Initialize app prompt on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show modal for first-time Android visitors after 3 seconds
+        if (shouldShowAppPrompt()) {
+            setTimeout(showAppModal, 3000);
+        } else if (isAndroid()) {
+            // Show banner for returning Android visitors
+            setTimeout(showAppBanner, 2000);
+        }
+    });
+    </script>
+
     <!-- Navigation -->
     <nav class="top-nav">
         <a href="#" class="nav-brand" onclick="goHome(); return false;">
