@@ -2874,6 +2874,7 @@ const countries = [
     { code: 'JP', name: 'Japan', phone: '+81', currency: 'JPY', symbol: '¥', amounts: [750000, 1500000, 2250000], rate: 38.5 },
     { code: 'CN', name: 'China', phone: '+86', currency: 'CNY', symbol: '¥', amounts: [35000, 70000, 105000], rate: 1.85 },
     { code: 'KR', name: 'South Korea', phone: '+82', currency: 'KRW', symbol: '₩', amounts: [6500000, 13000000, 19500000], rate: 345 },
+    { code: 'ZA', name: 'South Africa', phone: '+27', currency: 'ZAR', symbol: 'R', amounts: [90000, 180000, 270000], rate: 4.8 },
     { code: 'FJ', name: 'Fiji', phone: '+679', currency: 'FJD', symbol: 'FJ$', amounts: [11000, 22000, 33000], rate: 0.58 },
     { code: 'VU', name: 'Vanuatu', phone: '+678', currency: 'VUV', symbol: 'VT', amounts: [1200000, 2400000, 3600000], rate: 30.5 },
     { code: 'SB', name: 'Solomon Islands', phone: '+677', currency: 'SBD', symbol: 'SI$', amounts: [40000, 80000, 120000], rate: 2.15 },
@@ -4782,7 +4783,14 @@ const CURRENCY_TO_USD = {
     'TOP': 0.42,  // Tongan Pa'anga
     'WST': 0.37,  // Samoan Tala
     'IDR': 0.000063, // Indonesian Rupiah
-    'MYR': 0.22   // Malaysian Ringgit
+    'MYR': 0.22,  // Malaysian Ringgit
+    'ZAR': 0.055, // South African Rand
+    'GBP': 1.27,  // British Pound
+    'SGD': 0.74,  // Singapore Dollar
+    'INR': 0.012, // Indian Rupee
+    'JPY': 0.0067, // Japanese Yen
+    'CNY': 0.14,  // Chinese Yuan
+    'KRW': 0.00075 // South Korean Won
 };
 
 let paypalButtonsRendered = false;
