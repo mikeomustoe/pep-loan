@@ -1827,6 +1827,8 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                         <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
                         <button class="filter-tab" onclick="setFilter('pending', this)">Pending</button>
                         <button class="filter-tab" onclick="setFilter('approved', this)">Approved</button>
+                        <button class="filter-tab" onclick="setFilter('paid', this)" style="border-color: #4CAF50; color: #4CAF50;">💰 Paid</button>
+                        <button class="filter-tab" onclick="setFilter('unpaid', this)" style="border-color: #ff9800; color: #ff9800;">⏳ Unpaid</button>
                         <button class="filter-tab" onclick="setFilter('disbursed', this)">Disbursed</button>
                         <button class="filter-tab" onclick="setFilter('blocked', this)">🚫 Blocked</button>
                         <button class="filter-tab" onclick="setFilter('registered', this)" style="border-color: #9c27b0; color: #9c27b0;">👤 No App</button>
@@ -4037,9 +4039,20 @@ function renderApplications() {
     
     // Normal application filter
     const filtered = allApplications.filter(app => {
-        const matchesFilter = currentFilter === 'all' || 
-            app.status === currentFilter || 
-            (currentFilter === 'blocked' && app.blocked);
+        let matchesFilter = false;
+        
+        if (currentFilter === 'all') {
+            matchesFilter = true;
+        } else if (currentFilter === 'paid') {
+            matchesFilter = app.paymentStatus === 'paid';
+        } else if (currentFilter === 'unpaid') {
+            matchesFilter = app.paymentStatus !== 'paid';
+        } else if (currentFilter === 'blocked') {
+            matchesFilter = app.blocked;
+        } else {
+            matchesFilter = app.status === currentFilter;
+        }
+        
         const matchesSearch = !searchTerm || 
             app.fullName.toLowerCase().includes(searchTerm) || 
             app.email.toLowerCase().includes(searchTerm) ||
@@ -4058,15 +4071,22 @@ function renderApplications() {
         const curr = app.currency || 'PGK';
         const countryInfo = countries.find(c => c.code === app.country) || { name: app.country || 'Unknown' };
         
+        // Payment status badge
+        const isPaid = app.paymentStatus === 'paid';
+        const paymentBadge = isPaid 
+            ? '<span style="background: #4CAF50; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px;">💰 PAID</span>'
+            : '<span style="background: #ff9800; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px;">⏳ UNPAID</span>';
+        
         return `
-            <div class="application-item ${app.blocked ? 'blocked' : ''}" id="app_${app.id}" onclick="toggleApplication('${app.id}')">
+            <div class="application-item ${app.blocked ? 'blocked' : ''} ${isPaid ? 'paid' : ''}" id="app_${app.id}" onclick="toggleApplication('${app.id}')">
                 <div class="app-summary">
                     <div class="app-info">
-                        <div class="app-avatar">${initial}</div>
+                        <div class="app-avatar" style="${isPaid ? 'background: #4CAF50;' : ''}">${initial}</div>
                         <div>
                             <div class="app-name">
                                 ${Security.sanitizeInput(app.fullName)}
                                 ${app.blocked ? '<span class="blocked-badge">BLOCKED</span>' : ''}
+                                ${paymentBadge}
                             </div>
                             <div class="app-meta">${Security.sanitizeInput(app.email)} • ${countryInfo.name} • ${date.toLocaleDateString()}</div>
                         </div>
@@ -4098,6 +4118,32 @@ function renderApplications() {
                             <div class="detail-row"><span class="label">Purpose</span><span class="value">${Security.sanitizeInput(app.purpose)}</span></div>
                             <div class="detail-row"><span class="label">Repayment</span><span class="value">${app.repayment} mo</span></div>
                             <div class="detail-row"><span class="label">5% Deposit</span><span class="value">${curr} ${Math.round(app.loanAmount * 0.05).toLocaleString()}</span></div>
+                        </div>
+                        <div class="detail-group">
+                            <h5>💳 Payment Status</h5>
+                            ${isPaid ? `
+                                <div style="background: #e8f5e9; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                        <span style="font-size: 24px;">✅</span>
+                                        <strong style="color: #2e7d32; font-size: 16px;">Payment Received!</strong>
+                                    </div>
+                                    <div class="detail-row"><span class="label">Amount</span><span class="value" style="color: #2e7d32; font-weight: 700;">$${app.paymentAmount || '0'} USD</span></div>
+                                    <div class="detail-row"><span class="label">Method</span><span class="value">${app.paymentMethod || 'PayPal'}</span></div>
+                                    <div class="detail-row"><span class="label">Transaction ID</span><span class="value" style="font-size: 10px; word-break: break-all;">${app.paymentId || '-'}</span></div>
+                                    <div class="detail-row"><span class="label">Payer Email</span><span class="value">${app.payerEmail || '-'}</span></div>
+                                    <div class="detail-row"><span class="label">Payer Name</span><span class="value">${app.payerName || '-'}</span></div>
+                                    <div class="detail-row"><span class="label">Date</span><span class="value">${app.paymentDate?.toDate ? app.paymentDate.toDate().toLocaleString() : '-'}</span></div>
+                                </div>
+                            ` : `
+                                <div style="background: #fff3e0; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                        <span style="font-size: 24px;">⏳</span>
+                                        <strong style="color: #e65100; font-size: 16px;">Awaiting Payment</strong>
+                                    </div>
+                                    <div class="detail-row"><span class="label">Required</span><span class="value" style="color: #e65100; font-weight: 700;">${curr} ${Math.round(app.loanAmount * 0.05).toLocaleString()}</span></div>
+                                    <p style="font-size: 12px; color: #666; margin-top: 10px;">User has not paid the 5% processing fee yet.</p>
+                                </div>
+                            `}
                         </div>
                         <div class="detail-group">
                             <h5>📎 Uploaded Documents</h5>
