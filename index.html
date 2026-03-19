@@ -5682,16 +5682,17 @@ document.addEventListener('DOMContentLoaded', () => {
     var ADMIN_TOKEN = 'PEP-2024-SecureVisitorTracker-X9k2mL';
     
     function loadVisitors() {
-        fetch(TRACKER_URL + '/visitors?limit=50&token=' + ADMIN_TOKEN)
+        fetch(TRACKER_URL + '/visitors?limit=50')
             .then(function(r) { 
-                if (r.status === 401) {
-                    throw new Error('Unauthorized');
-                }
                 return r.json(); 
             })
             .then(function(data) {
                 if (data.error) {
                     console.log('Visitor API error:', data.error);
+                    var container = document.getElementById('visitorsList');
+                    if (container) {
+                        container.innerHTML = '<div class="visitors-empty"><div class="visitors-empty-icon">⚠️</div><p>Error: ' + data.error + '</p></div>';
+                    }
                     return;
                 }
                 visitorsList = data.visitors || [];
