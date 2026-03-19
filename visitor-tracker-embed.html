@@ -1,0 +1,107 @@
+<!-- PEP Visitor Tracker - Add this before </body> -->
+<script>
+(function() {
+    const TRACKER_URL = 'https://visitor-tracker.kurosoft01.workers.dev';
+    const HEARTBEAT_INTERVAL = 30000; // 30 seconds
+    
+    // Generate or get visitor ID
+    let visitorId = localStorage.getItem('pep_visitor_id');
+    if (!visitorId) {
+        visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('pep_visitor_id', visitorId);
+    }
+    
+    let pageViews = parseInt(sessionStorage.getItem('pep_pageviews') || '0') + 1;
+    sessionStorage.setItem('pep_pageviews', pageViews);
+    
+    // Detect browser
+    function getBrowser() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Firefox')) return { name: 'Firefox', version: ua.match(/Firefox\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Edg')) return { name: 'Edge', version: ua.match(/Edg\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Chrome')) return { name: 'Chrome', version: ua.match(/Chrome\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Safari')) return { name: 'Safari', version: ua.match(/Version\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Opera') || ua.includes('OPR')) return { name: 'Opera', version: '' };
+        return { name: 'Unknown', version: '' };
+    }
+    
+    // Detect OS
+    function getOS() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Windows NT 10')) return 'Windows 10';
+        if (ua.includes('Windows NT 11') || (ua.includes('Windows NT 10') && ua.includes('Win64'))) return 'Windows 11';
+        if (ua.includes('Windows')) return 'Windows';
+        if (ua.includes('Mac OS X')) return 'macOS';
+        if (ua.includes('Linux')) return 'Linux';
+        if (ua.includes('Android')) return 'Android';
+        if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+        return 'Unknown';
+    }
+    
+    // Detect device type
+    function getDevice() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Mobile') || ua.includes('Android')) {
+            if (ua.includes('Tablet') || ua.includes('iPad')) return 'tablet';
+            return 'mobile';
+        }
+        return 'desktop';
+    }
+    
+    const browser = getBrowser();
+    const visitorData = {
+        visitorId: visitorId,
+        browser: browser.name,
+        browserVersion: browser.version,
+        os: getOS(),
+        device: getDevice(),
+        referrer: document.referrer || 'Direct',
+        page: window.location.pathname,
+        screenSize: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        userAgent: navigator.userAgent,
+        pageViews: pageViews
+    };
+    
+    // Track visit
+    function trackVisit() {
+        fetch(TRACKER_URL + '/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(visitorData)
+        }).catch(() => {});
+    }
+    
+    // Heartbeat
+    function sendHeartbeat() {
+        fetch(TRACKER_URL + '/heartbeat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                visitorId: visitorId,
+                page: window.location.pathname,
+                pageViews: parseInt(sessionStorage.getItem('pep_pageviews') || '1')
+            })
+        }).catch(() => {});
+    }
+    
+    // On page leave
+    function onLeave() {
+        navigator.sendBeacon(TRACKER_URL + '/leave', JSON.stringify({
+            visitorId: visitorId
+        }));
+    }
+    
+    // Initialize
+    trackVisit();
+    setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+    
+    // Track page leave
+    window.addEventListener('beforeunload', onLeave);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            onLeave();
+        }
+    });
+})();
+</script>
