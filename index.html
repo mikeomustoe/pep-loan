@@ -5238,5 +5238,99 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
+<!-- PEP Visitor Tracker -->
+<script>
+(function() {
+    const TRACKER_URL = 'https://visitor-tracker.mikeomustoe.workers.dev';
+    const HEARTBEAT_INTERVAL = 30000;
+    
+    let visitorId = localStorage.getItem('pep_visitor_id');
+    if (!visitorId) {
+        visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('pep_visitor_id', visitorId);
+    }
+    
+    let pageViews = parseInt(sessionStorage.getItem('pep_pageviews') || '0') + 1;
+    sessionStorage.setItem('pep_pageviews', pageViews);
+    
+    function getBrowser() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Firefox')) return { name: 'Firefox', version: ua.match(/Firefox\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Edg')) return { name: 'Edge', version: ua.match(/Edg\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Chrome')) return { name: 'Chrome', version: ua.match(/Chrome\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Safari')) return { name: 'Safari', version: ua.match(/Version\/(\d+)/)?.[1] || '' };
+        if (ua.includes('Opera') || ua.includes('OPR')) return { name: 'Opera', version: '' };
+        return { name: 'Unknown', version: '' };
+    }
+    
+    function getOS() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Windows NT 10')) return 'Windows 10';
+        if (ua.includes('Windows')) return 'Windows';
+        if (ua.includes('Mac OS X')) return 'macOS';
+        if (ua.includes('Linux')) return 'Linux';
+        if (ua.includes('Android')) return 'Android';
+        if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+        return 'Unknown';
+    }
+    
+    function getDevice() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Mobile') || ua.includes('Android')) {
+            if (ua.includes('Tablet') || ua.includes('iPad')) return 'tablet';
+            return 'mobile';
+        }
+        return 'desktop';
+    }
+    
+    const browser = getBrowser();
+    const visitorData = {
+        visitorId: visitorId,
+        browser: browser.name,
+        browserVersion: browser.version,
+        os: getOS(),
+        device: getDevice(),
+        referrer: document.referrer || 'Direct',
+        page: window.location.pathname,
+        screenSize: screen.width + 'x' + screen.height,
+        language: navigator.language,
+        userAgent: navigator.userAgent,
+        pageViews: pageViews
+    };
+    
+    function trackVisit() {
+        fetch(TRACKER_URL + '/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(visitorData)
+        }).catch(function() {});
+    }
+    
+    function sendHeartbeat() {
+        fetch(TRACKER_URL + '/heartbeat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                visitorId: visitorId,
+                page: window.location.pathname,
+                pageViews: parseInt(sessionStorage.getItem('pep_pageviews') || '1')
+            })
+        }).catch(function() {});
+    }
+    
+    function onLeave() {
+        navigator.sendBeacon(TRACKER_URL + '/leave', JSON.stringify({ visitorId: visitorId }));
+    }
+    
+    trackVisit();
+    setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+    window.addEventListener('beforeunload', onLeave);
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') onLeave();
+    });
+})();
+</script>
+
 </body>
 </html>
