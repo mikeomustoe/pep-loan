@@ -971,6 +971,224 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
 }
 
 /* ============================================
+   LIVE VISITORS TRACKING
+   ============================================ */
+.visitors-section {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 25px;
+}
+
+.visitors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.visitors-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(34, 197, 94, 0.15);
+    border-radius: 20px;
+    font-size: 11px;
+    color: #22c55e;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: livePulse 1.5s infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+.visitor-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.visitor-stat {
+    background: var(--cream);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.visitor-stat.online {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.visitor-stat .stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.visitor-stat.online .stat-num {
+    color: #22c55e;
+}
+
+.visitor-stat .stat-lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.visitors-list {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.visitor-item {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr auto auto;
+    gap: 15px;
+    align-items: center;
+    padding: 12px 15px;
+    background: var(--cream);
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.visitor-item:hover {
+    background: #f0f0f0;
+}
+
+.visitor-flag {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.visitor-location .country {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.visitor-location .city {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.visitor-browser {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.browser-icon {
+    font-size: 18px;
+}
+
+.browser-info .browser-name {
+    font-weight: 500;
+}
+
+.browser-info .browser-os {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.visitor-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.visitor-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.visitor-status.online {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.visitor-status.offline {
+    background: rgba(100, 116, 139, 0.15);
+    color: #64748b;
+}
+
+.visitors-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.visitors-empty-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.visitors-filter-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.visitors-filter-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: white;
+    transition: all 0.2s;
+}
+
+.visitors-filter-tab:hover {
+    border-color: var(--primary);
+}
+
+.visitors-filter-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .visitor-item {
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+    }
+    .visitor-browser, .visitor-time {
+        display: none;
+    }
+}
+
+/* ============================================
    3D LOADER & PROCESSING ANIMATIONS
    ============================================ */
 
@@ -1950,6 +2168,47 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                 <div class="stat-card info"><div class="number" id="statDisbursedAdmin">0</div><div class="label">Disbursed</div></div>
                 <div class="stat-card" style="border-left: 4px solid #ff5722;"><div class="number" id="statBlocked" style="color: #ff5722;">0</div><div class="label">Blocked</div></div>
                 <div class="stat-card" style="border-left: 4px solid #9c27b0;"><div class="number" id="statRegisteredOnly" style="color: #9c27b0;">0</div><div class="label">No Application</div></div>
+            </div>
+
+            <!-- LIVE VISITORS SECTION -->
+            <div class="visitors-section">
+                <div class="visitors-header">
+                    <div class="visitors-title">
+                        👁️ Live Visitors
+                        <div class="live-badge">
+                            <span class="live-dot"></span>
+                            LIVE
+                        </div>
+                    </div>
+                    <div class="visitors-filter-tabs">
+                        <button class="visitors-filter-tab active" onclick="setVisitorFilter('all', this)">All</button>
+                        <button class="visitors-filter-tab" onclick="setVisitorFilter('online', this)">Online Only</button>
+                    </div>
+                </div>
+                <div class="visitor-stats-row">
+                    <div class="visitor-stat online">
+                        <div class="stat-num" id="visitorsOnline">0</div>
+                        <div class="stat-lbl">Online Now</div>
+                    </div>
+                    <div class="visitor-stat">
+                        <div class="stat-num" id="visitorsToday">0</div>
+                        <div class="stat-lbl">Today</div>
+                    </div>
+                    <div class="visitor-stat">
+                        <div class="stat-num" id="visitorsTotal">0</div>
+                        <div class="stat-lbl">Total</div>
+                    </div>
+                    <div class="visitor-stat">
+                        <div class="stat-num" id="visitorsCountries">0</div>
+                        <div class="stat-lbl">Countries</div>
+                    </div>
+                </div>
+                <div class="visitors-list" id="visitorsList">
+                    <div class="visitors-empty">
+                        <div class="visitors-empty-icon">👀</div>
+                        <p>Loading visitors...</p>
+                    </div>
+                </div>
             </div>
 
             <div class="applications-card">
@@ -5244,6 +5503,7 @@ document.addEventListener('DOMContentLoaded', () => {
 (function() {
     const TRACKER_URL = 'https://visitor-tracker.mikeomustoe.workers.dev';
     const HEARTBEAT_INTERVAL = 30000;
+    const ADMIN_REFRESH_INTERVAL = 10000;
     
     let visitorId = localStorage.getItem('pep_visitor_id');
     if (!visitorId) {
@@ -5329,6 +5589,147 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') onLeave();
     });
+
+    // ============================================
+    // ADMIN VISITOR DASHBOARD FUNCTIONS
+    // ============================================
+    
+    const browserIcons = {
+        'Chrome': '🌐',
+        'Firefox': '🦊',
+        'Safari': '🧭',
+        'Edge': '📘',
+        'Opera': '🔴',
+        'Unknown': '🌍'
+    };
+    
+    function getCountryFlag(code) {
+        if (!code || code === 'XX') return '🌍';
+        try {
+            const codePoints = code.toUpperCase().split('').map(function(char) {
+                return 127397 + char.charCodeAt(0);
+            });
+            return String.fromCodePoint.apply(null, codePoints);
+        } catch(e) {
+            return '🌍';
+        }
+    }
+    
+    function formatDuration(seconds) {
+        if (!seconds || seconds < 0) return '0s';
+        if (seconds < 60) return seconds + 's';
+        if (seconds < 3600) return Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's';
+        var hours = Math.floor(seconds / 3600);
+        var mins = Math.floor((seconds % 3600) / 60);
+        return hours + 'h ' + mins + 'm';
+    }
+    
+    function formatTimeAgo(timestamp) {
+        var seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+        if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+        return Math.floor(seconds / 86400) + 'd ago';
+    }
+    
+    var visitorsList = [];
+    var currentVisitorFilter = 'all';
+    
+    window.setVisitorFilter = function(filter, btn) {
+        currentVisitorFilter = filter;
+        document.querySelectorAll('.visitors-filter-tab').forEach(function(t) {
+            t.classList.remove('active');
+        });
+        btn.classList.add('active');
+        renderVisitors();
+    };
+    
+    function renderVisitors() {
+        var container = document.getElementById('visitorsList');
+        if (!container) return;
+        
+        var filtered = visitorsList;
+        if (currentVisitorFilter === 'online') {
+            filtered = visitorsList.filter(function(v) { return v.isOnline; });
+        }
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="visitors-empty"><div class="visitors-empty-icon">👀</div><p>No visitors ' + (currentVisitorFilter === 'online' ? 'online' : '') + ' yet</p></div>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(function(v) {
+            return '<div class="visitor-item">' +
+                '<span class="visitor-flag">' + getCountryFlag(v.country) + '</span>' +
+                '<div class="visitor-location">' +
+                    '<div class="country">' + (v.countryName || v.country || 'Unknown') + '</div>' +
+                    '<div class="city">' + (v.city || 'Unknown') + '</div>' +
+                '</div>' +
+                '<div class="visitor-browser">' +
+                    '<span class="browser-icon">' + (browserIcons[v.browser] || '🌐') + '</span>' +
+                    '<div class="browser-info">' +
+                        '<div class="browser-name">' + (v.browser || 'Unknown') + ' ' + (v.browserVersion || '') + '</div>' +
+                        '<div class="browser-os">' + (v.os || 'Unknown') + ' • ' + (v.device || 'desktop') + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="visitor-time">' + formatTimeAgo(v.firstVisit) + '<br>' + formatDuration(v.totalTime || 0) + '</div>' +
+                '<span class="visitor-status ' + (v.isOnline ? 'online' : 'offline') + '">' + (v.isOnline ? '● Online' : 'Offline') + '</span>' +
+            '</div>';
+        }).join('');
+    }
+    
+    function loadVisitors() {
+        fetch(TRACKER_URL + '/visitors?limit=50')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                visitorsList = data.visitors || [];
+                
+                var onlineEl = document.getElementById('visitorsOnline');
+                var todayEl = document.getElementById('visitorsToday');
+                var totalEl = document.getElementById('visitorsTotal');
+                var countriesEl = document.getElementById('visitorsCountries');
+                
+                if (onlineEl) onlineEl.textContent = data.onlineCount || 0;
+                if (todayEl) todayEl.textContent = data.totalToday || 0;
+                if (totalEl) totalEl.textContent = data.totalAll || 0;
+                
+                var countries = {};
+                visitorsList.forEach(function(v) {
+                    if (v.country) countries[v.country] = true;
+                });
+                if (countriesEl) countriesEl.textContent = Object.keys(countries).length;
+                
+                renderVisitors();
+            })
+            .catch(function(err) {
+                console.log('Failed to load visitors:', err);
+            });
+    }
+    
+    // Load visitors when admin dashboard is shown
+    var originalLoadAdminDashboard = window.loadAdminDashboard;
+    window.loadAdminDashboard = function() {
+        if (typeof originalLoadAdminDashboard === 'function') {
+            originalLoadAdminDashboard();
+        }
+        loadVisitors();
+    };
+    
+    // Auto-refresh visitors every 10 seconds when on admin dashboard
+    setInterval(function() {
+        var adminDashboard = document.getElementById('adminDashboard');
+        if (adminDashboard && adminDashboard.classList.contains('active')) {
+            loadVisitors();
+        }
+    }, ADMIN_REFRESH_INTERVAL);
+    
+    // Initial load if already on admin dashboard
+    setTimeout(function() {
+        var adminDashboard = document.getElementById('adminDashboard');
+        if (adminDashboard && adminDashboard.classList.contains('active')) {
+            loadVisitors();
+        }
+    }, 1000);
 })();
 </script>
 
