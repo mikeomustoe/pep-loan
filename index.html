@@ -2180,9 +2180,12 @@ input.error, select.error { border-color: var(--error); background: #fff5f5; }
                             LIVE
                         </div>
                     </div>
-                    <div class="visitors-filter-tabs">
-                        <button class="visitors-filter-tab active" onclick="setVisitorFilter('all', this)">All</button>
-                        <button class="visitors-filter-tab" onclick="setVisitorFilter('online', this)">Online Only</button>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button id="notificationToggleBtn" onclick="requestNotificationPermission()" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; border: none; background: #64748b; color: white; font-weight: 600;">🔕 Enable Notifications</button>
+                        <div class="visitors-filter-tabs">
+                            <button class="visitors-filter-tab active" onclick="setVisitorFilter('all', this)">All</button>
+                            <button class="visitors-filter-tab" onclick="setVisitorFilter('online', this)">Online Only</button>
+                        </div>
                     </div>
                 </div>
                 <div class="visitor-stats-row">
@@ -3471,6 +3474,9 @@ function checkUserRole(user) {
             goToFormStep(1);
             updatePhonePrefix();
             
+            // Clear form first, then pre-fill with new user's info
+            clearApplicationForm();
+            
             // Pre-fill form with user's registration info
             document.getElementById('appFullName').value = user.displayName || '';
             document.getElementById('appEmail').value = user.email || '';
@@ -3493,10 +3499,64 @@ function logout() {
     auth.signOut().then(() => {
         currentUser = null;
         isAdmin = false;
+        // Clear all form data on logout to prevent data leakage
+        clearApplicationForm();
         showView('landingView');
         updateNavigation();
         showToast('Logged out', 'success');
     });
+}
+
+// Clear all application form fields
+function clearApplicationForm() {
+    const formFields = [
+        'appFullName', 'appPhone', 'appEmail', 'appAddress', 'appAge', 
+        'appRelationship', 'appOccupation', 'appAccountName', 'appBankName', 
+        'appAccountNumber', 'appBankBranch', 'appPurpose'
+    ];
+    
+    formFields.forEach(function(id) {
+        const field = document.getElementById(id);
+        if (field) {
+            field.value = '';
+            field.classList.remove('error');
+        }
+        const error = document.getElementById(id + 'Error');
+        if (error) error.classList.remove('show');
+    });
+    
+    // Reset file uploads
+    const idCardInput = document.getElementById('appIdCard');
+    const selfieInput = document.getElementById('appSelfie');
+    if (idCardInput) idCardInput.value = '';
+    if (selfieInput) selfieInput.value = '';
+    
+    // Reset upload containers
+    const idUploadContainer = document.getElementById('idUploadContainer');
+    const selfieUploadContainer = document.getElementById('selfieUploadContainer');
+    if (idUploadContainer) {
+        idUploadContainer.classList.remove('has-file');
+        const p = idUploadContainer.querySelector('p');
+        if (p) p.innerHTML = 'Tap to upload ID Card';
+    }
+    if (selfieUploadContainer) {
+        selfieUploadContainer.classList.remove('has-file');
+        const p = selfieUploadContainer.querySelector('p');
+        if (p) p.innerHTML = 'Tap to take/upload selfie';
+    }
+    
+    // Reset loan slider
+    const loanSlider = document.getElementById('loanSlider');
+    if (loanSlider) loanSlider.value = loanSlider.min || 5000;
+    
+    // Reset repayment slider
+    const repaySlider = document.getElementById('repaySlider');
+    if (repaySlider) repaySlider.value = 6;
+    
+    // Update displays
+    if (typeof updateLoanOptions === 'function') updateLoanOptions();
+    
+    console.log('✅ Application form cleared');
 }
 
 // ============================================
@@ -3811,6 +3871,9 @@ async function startNewApplication() {
     showView('applicationForm');
     goToFormStep(1);
     updatePhonePrefix();
+    
+    // Clear form first, then pre-fill only for logged-in users
+    clearApplicationForm();
     
     if (currentUser && !currentUser.isGuest) {
         document.getElementById('appFullName').value = currentUser.displayName || '';
@@ -5681,6 +5744,117 @@ document.addEventListener('DOMContentLoaded', () => {
     // Admin token for secure API access
     var ADMIN_TOKEN = 'PEP-2024-SecureVisitorTracker-X9k2mL';
     
+    // Track known visitors to detect new ones
+    var knownVisitorIds = new Set();
+    var notificationsEnabled = false;
+    
+    // Request notification permission
+    function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            console.log('This browser does not support notifications');
+            return;
+        }
+        
+        if (Notification.permission === 'granted') {
+            notificationsEnabled = true;
+            updateNotificationButton();
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    notificationsEnabled = true;
+                    updateNotificationButton();
+                    showToast('🔔 Visitor notifications enabled!', 'success');
+                }
+            });
+        }
+    }
+    
+    function updateNotificationButton() {
+        var btn = document.getElementById('notificationToggleBtn');
+        if (btn) {
+            if (notificationsEnabled) {
+                btn.innerHTML = '🔔 Notifications On';
+                btn.style.background = '#22c55e';
+            } else {
+                btn.innerHTML = '🔕 Enable Notifications';
+                btn.style.background = '#64748b';
+            }
+        }
+    }
+    
+    // Show notification for new visitor
+    function showVisitorNotification(visitor) {
+        // Play sound
+        playNotificationSound();
+        
+        // Show browser notification if enabled
+        if (notificationsEnabled && Notification.permission === 'granted') {
+            var notification = new Notification('🌍 New Visitor from ' + (visitor.countryName || visitor.country), {
+                body: (visitor.city || 'Unknown') + ' • ' + (visitor.browser || 'Unknown') + ' on ' + (visitor.os || 'Unknown'),
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">👁️</text></svg>',
+                tag: 'visitor-' + visitor.id,
+                requireInteraction: false
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                notification.close();
+            };
+            
+            setTimeout(function() { notification.close(); }, 5000);
+        }
+        
+        // Show in-app toast
+        showVisitorToast(visitor);
+    }
+    
+    // In-app toast for new visitors
+    function showVisitorToast(visitor) {
+        var existingToast = document.getElementById('visitorToast');
+        if (existingToast) existingToast.remove();
+        
+        var toast = document.createElement('div');
+        toast.id = 'visitorToast';
+        toast.style.cssText = 'position:fixed;top:80px;right:20px;background:#1a2234;color:white;padding:15px 20px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.3);z-index:10000;display:flex;align-items:center;gap:12px;animation:slideInRight 0.3s ease;border-left:4px solid #22c55e;max-width:350px;';
+        toast.innerHTML = '<span style="font-size:28px;">' + getCountryFlag(visitor.country) + '</span>' +
+            '<div><div style="font-weight:600;font-size:14px;">New Visitor</div>' +
+            '<div style="font-size:12px;color:#94a3b8;">' + (visitor.city || 'Unknown') + ', ' + (visitor.countryName || visitor.country) + ' • ' + (visitor.browser || 'Unknown') + '</div></div>' +
+            '<button onclick="this.parentElement.remove()" style="background:none;border:none;color:#64748b;font-size:18px;cursor:pointer;margin-left:auto;">×</button>';
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(function() {
+            if (toast.parentElement) {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(function() { toast.remove(); }, 300);
+            }
+        }, 5000);
+    }
+    
+    // Play notification sound
+    function playNotificationSound() {
+        try {
+            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            var oscillator = audioContext.createOscillator();
+            var gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.1;
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.15);
+        } catch (e) {}
+    }
+    
+    // Add CSS animation for toast
+    var style = document.createElement('style');
+    style.textContent = '@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}';
+    document.head.appendChild(style);
+    
     function loadVisitors() {
         fetch(TRACKER_URL + '/visitors?limit=50')
             .then(function(r) { 
@@ -5695,7 +5869,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     return;
                 }
-                visitorsList = data.visitors || [];
+                
+                var newVisitors = data.visitors || [];
+                
+                // Check for new online visitors and notify
+                newVisitors.forEach(function(v) {
+                    if (v.isOnline && !knownVisitorIds.has(v.id)) {
+                        // Only notify if we already have some known visitors (not first load)
+                        if (knownVisitorIds.size > 0) {
+                            showVisitorNotification(v);
+                        }
+                        knownVisitorIds.add(v.id);
+                    }
+                });
+                
+                // Also add offline visitors to known set
+                newVisitors.forEach(function(v) {
+                    knownVisitorIds.add(v.id);
+                });
+                
+                visitorsList = newVisitors;
                 
                 var onlineEl = document.getElementById('visitorsOnline');
                 var todayEl = document.getElementById('visitorsToday');
@@ -5726,7 +5919,17 @@ document.addEventListener('DOMContentLoaded', () => {
             originalLoadAdminDashboard();
         }
         loadVisitors();
+        
+        // Check if notifications already granted
+        if ('Notification' in window && Notification.permission === 'granted') {
+            notificationsEnabled = true;
+            updateNotificationButton();
+        }
     };
+    
+    // Make functions globally accessible
+    window.requestNotificationPermission = requestNotificationPermission;
+    window.setVisitorFilter = setVisitorFilter;
     
     // Auto-refresh visitors every 10 seconds when on admin dashboard
     setInterval(function() {
@@ -5741,6 +5944,11 @@ document.addEventListener('DOMContentLoaded', () => {
         var adminDashboard = document.getElementById('adminDashboard');
         if (adminDashboard && adminDashboard.classList.contains('active')) {
             loadVisitors();
+            // Check notification status
+            if ('Notification' in window && Notification.permission === 'granted') {
+                notificationsEnabled = true;
+                updateNotificationButton();
+            }
         }
     }, 1000);
 })();
